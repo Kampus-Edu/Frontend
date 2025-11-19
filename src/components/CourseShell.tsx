@@ -1,526 +1,419 @@
 'use client';
-
-import { useEffect, useMemo, useRef, useState } from 'react';
+import { useState } from 'react';
+import Link from 'next/link';
 import {
-    MessageSquare, BarChart3, GraduationCap, FileText, Users, Send,
-    Paperclip, Smile, BookOpen, Plus, Search, Settings, Bell, X,
-    CheckCircle, Clock, TrendingUp, AlertCircle, Star, Download, MessageCircle
+    ArrowLeft, Users, Star, Clock, TrendingUp, MessageSquare,
+    BookOpen, Hash, Pin, Shield, ChevronRight, Info, Send,
+    FileText, Lightbulb, AlertCircle, CheckCircle
 } from 'lucide-react';
-import { Button } from '@/components/ui/Button';
-import { allCourses, previewMessages, fullMessages } from '@/lib/data';
 
-type Props = {
-    course: {
-        id: string;
-        name: string;
-        code: string;
-        professor: string;
-        currentStudents: number;
-        alumni: number;
-        prospective: number;
-        difficulty: number;
-        // add other fields you actually use here if needed (e.g. timeCommitment, avgGrade)
-    };
-    joined: boolean;
-};
+interface Course {
+    id: string;
+    name: string;
+    code: string;
+    professor: string;
+    department: string;
+    description: string;
+    currentStudents: number;
+    alumni: number;
+    prospective: number;
+    difficulty: number;
+    popularity: number;
+    tags: string[];
+    color: string;
+    year: number;
+}
 
-type UserType = 'all' | 'current' | 'alumni' | 'prospective';
-type Tab = 'discussion' | 'course-intel' | 'mentorship' | 'resources' | 'sessions';
+interface CourseShellProps {
+    course: Course;
+    joined?: boolean;
+}
 
-export default function CourseShell({ course, joined }: Props) {
-    // UI state
-    const [activeTab, setActiveTab] = useState<Tab>('discussion');
-    const [userType, setUserType] = useState<UserType>('all');
-    const [composer, setComposer] = useState('');
-    const [showChat, setShowChat] = useState(true);
+const mockPosts = [
+    {
+        id: 1,
+        type: 'question',
+        category: 'exam',
+        title: "How should I prepare for the midterm?",
+        author: "Anonymous",
+        role: "student",
+        content: "I heard the midterm is pretty challenging. What topics should I focus on?",
+        replies: 12,
+        upvotes: 34,
+        timestamp: "2 hours ago",
+        answered: true
+    },
+    {
+        id: 2,
+        type: 'guide',
+        category: 'strategy',
+        title: "My approach to succeeding in this course",
+        author: "Sarah Chen",
+        role: "alumni",
+        content: "After taking this course last semester, here are my top tips for managing the workload...",
+        replies: 8,
+        upvotes: 89,
+        timestamp: "1 day ago",
+        pinned: true
+    },
+    {
+        id: 3,
+        type: 'question',
+        category: 'resources',
+        title: "Best supplementary materials?",
+        author: "Jordan Kim",
+        role: "student",
+        content: "The textbook isn't clicking for me. Any YouTube channels or online resources you'd recommend?",
+        replies: 15,
+        upvotes: 23,
+        timestamp: "3 days ago",
+        answered: false
+    }
+];
 
-    // Right-rail chat demo state
-    const [chatMessage, setChatMessage] = useState('');
-    const [chatMessages, setChatMessages] = useState<
-        { id: number; user: string; userType: UserType | 'instructor'; message: string; timestamp: string }[]
-    >([]);
-    const chatEndRef = useRef<HTMLDivElement | null>(null);
+export default function CourseShell({ course, joined = false }: CourseShellProps) {
+    const [isJoined, setIsJoined] = useState(joined);
+    const [activeTab, setActiveTab] = useState<'feed' | 'guides' | 'qa' | 'members'>('feed');
+    const [message, setMessage] = useState('');
 
-    // Demo: online users list (static)
-    const onlineUsers = [
-        { id: 1, name: 'Sarah Chen', userType: 'current', status: 'online', avatar: '👩‍🎓' },
-        { id: 2, name: 'Alex Kim', userType: 'current', status: 'online', avatar: '🧑‍🔬' },
-        { id: 3, name: 'Dr. Mike Rodriguez', userType: 'alumni', status: 'online', avatar: '🎓' },
-        { id: 4, name: 'Emma Wilson', userType: 'current', status: 'away', avatar: '👩‍💻' },
-    ];
-
-    // Demo chat init
-    useEffect(() => {
-        setChatMessages([
-            { id: 1, user: 'Sarah Chen', userType: 'current', message: 'Anyone working on problem 3?', timestamp: '2:31 PM' },
-            { id: 2, user: 'Alex Kim', userType: 'current', message: 'Triangle inequality is the key', timestamp: '2:32 PM' },
-            { id: 3, user: 'Dr. Mike Rodriguez', userType: 'alumni', message: 'Remember: |a+b| ≤ |a| + |b|', timestamp: '2:33 PM' },
-        ]);
-    }, []);
-
-    // chat autoscroll
-    useEffect(() => {
-        chatEndRef.current?.scrollIntoView({ behavior: 'smooth' });
-    }, [chatMessages, showChat]);
-
-    const handleSendChatMessage = () => {
-        if (!chatMessage.trim()) return;
-        const now = new Date();
-        setChatMessages((prev) => [
-            ...prev,
-            {
-                id: prev.length + 1,
-                user: 'You',
-                userType: 'current',
-                message: chatMessage.trim(),
-                timestamp: now.toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit' }),
-            },
-        ]);
-        setChatMessage('');
-    };
-
-    // Left sidebar list — reuse your global courses for demo
-    const courses = allCourses;
-
-    // Messages for the Discussion tab
-    const discussionMessages = useMemo(
-        () =>
-            (joined ? fullMessages : previewMessages).filter(
-                (m) => userType === 'all' || m.userType === userType
-            ),
-        [joined, userType]
-    );
-
-    // helpers
-    const getUserTypeColor = (type: string) => {
-        switch (type) {
-            case 'current':
-                return 'bg-gradient-to-r from-blue-500/20 to-cyan-500/20 text-blue-700 border border-blue-200/50';
-            case 'alumni':
-                return 'bg-gradient-to-r from-purple-500/20 to-violet-500/20 text-purple-700 border border-purple-200/50';
-            case 'prospective':
-                return 'bg-gradient-to-r from-emerald-500/20 to-teal-500/20 text-emerald-700 border border-emerald-200/50';
-            case 'instructor':
-                return 'bg-gradient-to-r from-amber-500/20 to-orange-500/20 text-amber-700 border border-amber-200/50';
-            default:
-                return 'bg-gray-100/80 text-gray-700 border border-gray-200/50';
-        }
-    };
-
-    const getStatusColor = (status: 'online' | 'away' | 'offline') => {
-        switch (status) {
-            case 'online':
-                return 'bg-green-400';
-            case 'away':
-                return 'bg-yellow-400';
-            default:
-                return 'bg-gray-400';
-        }
+    const handleJoin = () => {
+        setIsJoined(true);
     };
 
     return (
-        <div className="h-screen bg-gradient-to-br from-slate-100 via-gray-100 to-slate-200 flex overflow-hidden">
-            {/* Sidebar */}
-            <div className="w-80 bg-white/80 backdrop-blur-xl border-r border-white/20 shadow-xl flex flex-col">
-                {/* Brand */}
-                <div className="p-6 border-b border-white/20 bg-gradient-to-r from-white/90 to-gray-50/90">
-                    <div className="flex items-center space-x-4">
-                        <div className="w-12 h-12 bg-gradient-to-br from-blue-500 via-purple-500 to-indigo-600 rounded-2xl flex items-center justify-center shadow-lg shadow-blue-500/25">
-                            <BookOpen className="text-white" size={24} />
-                        </div>
-                        <div>
-                            <h1 className="text-2xl font-bold bg-gradient-to-r from-gray-900 to-gray-700 bg-clip-text text-transparent">GroupLearn</h1>
-                            <p className="text-gray-600 font-medium">Cross-semester communities</p>
-                        </div>
-                    </div>
-                </div>
-
-                {/* Your Courses */}
-                <div className="flex-1 overflow-y-auto">
-                    <div className="p-6">
-                        <div className="flex items-center justify-between mb-6">
-                            <h3 className="text-sm font-bold text-gray-500 uppercase tracking-wider">Your Courses</h3>
-                            <button className="p-2 text-gray-400 hover:text-gray-600 hover:bg-gray-100/80 rounded-xl transition-all duration-200">
-                                <Plus size={18} />
-                            </button>
-                        </div>
-
-                        <div className="space-y-4">
-                            {courses.map((c) => (
-                                <div
-                                    key={c.id}
-                                    className={`w-full text-left p-4 rounded-2xl transition-all duration-300 group ${
-                                        c.id === course.id
-                                            ? 'bg-white/90 backdrop-blur-xl shadow-lg shadow-gray-900/10 border border-white/30 scale-[1.02]'
-                                            : 'hover:bg-white/70 hover:backdrop-blur-xl hover:shadow-md hover:scale-[1.01]'
-                                    }`}
-                                >
-                                    <div className="flex items-start space-x-4">
-                                        <div className={`w-4 h-4 rounded-full ${c.color} mt-1 shadow`} />
-                                        <div className="flex-1 min-w-0">
-                                            <div className="flex items-center justify-between mb-1">
-                                                <p className="font-bold text-gray-900 truncate">{c.name}</p>
-                                            </div>
-                                            <p className="text-xs text-gray-600 font-medium">{c.code} • {c.professor}</p>
-                                        </div>
-                                    </div>
-                                </div>
-                            ))}
-                        </div>
-
-                    </div>
-                </div>
-            </div>
-
-            {/* Main */}
-            <div className="flex-1 flex flex-col">
-                {/* Header */}
-                <div className="bg-white/80 backdrop-blur-xl border-b border-white/20 p-6 shadow-lg">
+        <div className="min-h-screen bg-white">
+            {/* Header */}
+            <div className="border-b border-black/5 sticky top-0 bg-white/95 backdrop-blur-xl z-40">
+                <div className="max-w-7xl mx-auto px-6 py-4">
                     <div className="flex items-center justify-between">
                         <div className="flex items-center space-x-6">
-                            <div className={`w-5 h-5 rounded-full ${courses.find(c => c.id === course.id)?.color ?? 'bg-slate-300'} shadow`} />
-                            <div>
-                                <h2 className="text-2xl font-bold text-gray-900 flex items-center space-x-3">
-                                    <span>{course.name}</span>
-                                    <span className="text-lg font-medium text-gray-500">({course.code})</span>
-                                </h2>
-                                <div className="flex items-center space-x-6 text-sm text-gray-600 font-medium mt-1">
-                                    <span>👩‍🎓 {course.currentStudents} current</span>
-                                    <span>🎓 {course.alumni} alumni</span>
-                                    <span>👀 {course.prospective} prospective</span>
-                                    <span>⭐ {course.difficulty}/5 difficulty</span>
+                            <Link
+                                href="/discover"
+                                className="flex items-center text-black/50 hover:text-black transition-colors duration-200 group"
+                            >
+                                <ArrowLeft size={18} className="mr-2 group-hover:-translate-x-1 transition-transform duration-200" />
+                                <span className="text-sm font-medium">Back</span>
+                            </Link>
+
+                            <div className="flex items-center space-x-3">
+                                <div className={`w-3 h-3 rounded-full ${course.color}`} />
+                                <div>
+                                    <h1 className="text-xl font-medium text-black">{course.code}</h1>
+                                    <p className="text-sm text-black/50">{course.name}</p>
                                 </div>
                             </div>
                         </div>
 
-                        <div className="flex items-center space-x-3">
-                            <button
-                                onClick={() => setShowChat((s) => !s)}
-                                className={`p-3 rounded-xl transition-all duration-200 ${showChat ? 'bg-blue-100 text-blue-600' : 'text-gray-400 hover:text-gray-600 hover:bg-gray-100/80'}`}
-                                aria-label="Toggle chat"
-                            >
-                                <MessageCircle size={22} />
-                            </button>
-                            <button className="p-3 text-gray-400 hover:text-gray-600 hover:bg-gray-100/80 rounded-xl transition-all duration-200" aria-label="Search">
-                                <Search size={22} />
-                            </button>
-                            <button className="p-3 text-gray-400 hover:text-gray-600 hover:bg-gray-100/80 rounded-xl transition-all duration-200" aria-label="Notifications">
-                                <Bell size={22} />
-                            </button>
-                            <button className="p-3 text-gray-400 hover:text-gray-600 hover:bg-gray-100/80 rounded-xl transition-all duration-200" aria-label="Settings">
-                                <Settings size={22} />
-                            </button>
+                        <div className="flex items-center space-x-4">
+                            {/* Stats */}
+                            <div className="flex items-center space-x-6 text-sm text-black/50">
+                                <span className="flex items-center space-x-1">
+                                    <Users size={14} />
+                                    <span>{course.currentStudents + course.alumni} members</span>
+                                </span>
+                                <span className="flex items-center space-x-1">
+                                    <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse" />
+                                    <span>{course.currentStudents} online</span>
+                                </span>
+                            </div>
+
+                            {!isJoined && (
+                                <button
+                                    onClick={handleJoin}
+                                    className="px-6 py-2 bg-black text-white rounded-full text-sm font-medium hover:bg-black/90 transition-all duration-200"
+                                >
+                                    Join Room
+                                </button>
+                            )}
                         </div>
                     </div>
                 </div>
+            </div>
 
-                {/* Tabs */}
-                <div className="bg-white/80 backdrop-blur-xl border-b border-white/20 px-6 shadow-sm">
-                    <nav className="flex space-x-8">
-                        {([
-                            { id: 'discussion', label: 'Discussion', icon: MessageSquare },
-                            { id: 'course-intel', label: 'Course Intel', icon: BarChart3 },
-                            { id: 'mentorship', label: 'Alumni Mentors', icon: GraduationCap },
-                            { id: 'resources', label: 'Resources', icon: FileText },
-                            { id: 'sessions', label: 'Study Sessions', icon: Users },
-                        ] as const).map((tab) => {
-                            const Icon = tab.icon;
-                            return (
-                                <button
-                                    key={tab.id}
-                                    onClick={() => setActiveTab(tab.id)}
-                                    className={`flex items-center space-x-3 py-4 px-2 border-b-[3px] font-semibold text-sm transition-all duration-300 ${
-                                        activeTab === tab.id
-                                            ? 'border-blue-500 text-blue-600 bg-blue-50/50'
-                                            : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
-                                    }`}
-                                >
-                                    <Icon size={18} />
-                                    <span>{tab.label}</span>
-                                </button>
-                            );
-                        })}
-                    </nav>
-                </div>
+            {/* Main Content */}
+            <div className="max-w-7xl mx-auto px-6 py-8">
+                <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+                    {/* Left Column - Main Content */}
+                    <div className="lg:col-span-2">
+                        {!isJoined ? (
+                            /* Pre-join Preview */
+                            <div className="space-y-6">
+                                {/* Course Info Card */}
+                                <div className="bg-gradient-to-br from-black/[0.02] to-transparent rounded-2xl p-8 border border-black/5">
+                                    <h2 className="text-2xl font-light text-black mb-4">{course.name}</h2>
+                                    <p className="text-black/60 mb-6 leading-relaxed">{course.description}</p>
 
-                {/* Content */}
-                <div className="flex-1 overflow-hidden">
-                    {activeTab === 'discussion' && (
-                        <div className="flex flex-col h-full">
-                            {/* Filter */}
-                            <div className="p-6 bg-gradient-to-r from-slate-50/80 to-gray-50/80 backdrop-blur-xl border-b border-white/20">
-                                <div className="flex items-center space-x-3 text-sm">
-                                    <span className="text-gray-600 font-medium">Viewing:</span>
-                                    {(['all','current','alumni','prospective'] as UserType[]).map((ut) => (
+                                    <div className="grid grid-cols-2 gap-6 mb-8">
+                                        <div>
+                                            <p className="text-sm text-black/40 mb-1">Professor</p>
+                                            <p className="text-black font-medium">{course.professor}</p>
+                                        </div>
+                                        <div>
+                                            <p className="text-sm text-black/40 mb-1">Department</p>
+                                            <p className="text-black font-medium">{course.department}</p>
+                                        </div>
+                                        <div>
+                                            <p className="text-sm text-black/40 mb-1">Difficulty</p>
+                                            <div className="flex items-center space-x-1">
+                                                {[...Array(5)].map((_, i) => (
+                                                    <Star
+                                                        key={i}
+                                                        size={14}
+                                                        className={i < course.difficulty ? 'fill-black text-black' : 'text-black/20'}
+                                                    />
+                                                ))}
+                                            </div>
+                                        </div>
+                                        <div>
+                                            <p className="text-sm text-black/40 mb-1">Year Level</p>
+                                            <p className="text-black font-medium">Year {course.year}</p>
+                                        </div>
+                                    </div>
+
+                                    <div className="flex flex-wrap gap-2 mb-8">
+                                        {course.tags.map((tag, i) => (
+                                            <span key={i} className="px-3 py-1.5 bg-white border border-black/10 rounded-full text-sm text-black/70">
+                                                {tag}
+                                            </span>
+                                        ))}
+                                    </div>
+
+                                    <button
+                                        onClick={handleJoin}
+                                        className="w-full py-4 bg-black text-white rounded-2xl font-medium hover:bg-black/90 transition-all duration-200 flex items-center justify-center space-x-2"
+                                    >
+                                        <Users size={18} />
+                                        <span>Join Course Room</span>
+                                    </button>
+                                </div>
+
+                                <div className="bg-white rounded-2xl p-6 border border-black/5">
+                                    <h3 className="text-lg font-medium text-black mb-4">What you'll find inside</h3>
+                                    <div className="space-y-4">
+                                        <div className="flex items-start space-x-3">
+                                            <MessageSquare className="text-emerald-600 mt-0.5" size={20} />
+                                            <div>
+                                                <p className="text-black font-medium">Active Q&A</p>
+                                                <p className="text-sm text-black/50">Get answers from students and alumni</p>
+                                            </div>
+                                        </div>
+                                        <div className="flex items-start space-x-3">
+                                            <FileText className="text-blue-600 mt-0.5" size={20} />
+                                            <div>
+                                                <p className="text-black font-medium">Study Guides</p>
+                                                <p className="text-sm text-black/50">Curated tips from successful students</p>
+                                            </div>
+                                        </div>
+                                        <div className="flex items-start space-x-3">
+                                            <Shield className="text-violet-600 mt-0.5" size={20} />
+                                            <div>
+                                                <p className="text-black font-medium">Academic Integrity</p>
+                                                <p className="text-sm text-black/50">Strategy sharing only, no solutions</p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                {/* Community Guidelines */}
+                                <div className="bg-amber-50/50 rounded-2xl p-6 border border-amber-200/30">
+                                    <div className="flex items-center space-x-2 mb-3">
+                                        <AlertCircle className="text-amber-600" size={20} />
+                                        <h3 className="text-black font-medium">Community Guidelines</h3>
+                                    </div>
+                                    <ul className="space-y-2 text-sm text-black/60">
+                                        <li className="flex items-start space-x-2">
+                                            <span className="text-amber-600 mt-0.5">•</span>
+                                            <span>Share strategies and study tips, not graded solutions</span>
+                                        </li>
+                                        <li className="flex items-start space-x-2">
+                                            <span className="text-amber-600 mt-0.5">•</span>
+                                            <span>Be respectful and supportive to all members</span>
+                                        </li>
+                                        <li className="flex items-start space-x-2">
+                                            <span className="text-amber-600 mt-0.5">•</span>
+                                            <span>Use the anonymous option if needed, but responsibly</span>
+                                        </li>
+                                    </ul>
+                                </div>
+                            </div>
+                        ) : (
+                            /* Joined View - Course Feed */
+                            <div className="space-y-6">
+                                {/* Tabs */}
+                                <div className="flex items-center space-x-1 p-1 bg-black/[0.02] rounded-xl">
+                                    {(['feed', 'guides', 'qa', 'members'] as const).map(tab => (
                                         <button
-                                            key={ut}
-                                            onClick={() => setUserType(ut)}
-                                            className={`px-4 py-2 rounded-xl font-medium transition-all duration-300 ${
-                                                userType === ut
-                                                    ? (ut === 'all'
-                                                        ? 'bg-gradient-to-r from-gray-800 to-gray-900 text-white shadow-lg shadow-gray-800/25'
-                                                        : 'bg-gradient-to-r from-blue-500 to-cyan-500 text-white shadow-lg shadow-blue-500/25')
-                                                    : 'bg-white/70 backdrop-blur-sm text-gray-600 border border-gray-200/50 hover:bg-white/90 hover:shadow-md'
+                                            key={tab}
+                                            onClick={() => setActiveTab(tab)}
+                                            className={`flex-1 px-4 py-2 rounded-lg text-sm font-medium transition-all duration-200 ${
+                                                activeTab === tab
+                                                    ? 'bg-white text-black shadow-sm'
+                                                    : 'text-black/50 hover:text-black'
                                             }`}
                                         >
-                                            {ut === 'all' ? 'All Members' : ut[0].toUpperCase() + ut.slice(1)}
+                                            {tab.charAt(0).toUpperCase() + tab.slice(1)}
                                         </button>
                                     ))}
                                 </div>
-                            </div>
 
-                            {/* Messages */}
-                            <div className="flex-1 overflow-y-auto p-6 space-y-6">
-                                {discussionMessages.map((msg) => (
-                                    <div key={msg.id} className="group hover:scale-[1.01] transition-all duration-300">
-                                        <div className="bg-white/80 backdrop-blur-xl rounded-2xl p-6 shadow-lg shadow-gray-900/5 border border-white/20 hover:shadow-xl hover:shadow-gray-900/10 transition-all duration-300">
-                                            <div className="flex space-x-4">
-                                                <div className="flex-shrink-0">
-                                                    <div className="w-12 h-12 bg-gradient-to-br from-gray-100 to-gray-200 rounded-2xl flex items-center justify-center text-xl shadow-md">
-                                                        {msg.avatar}
+                                {/* Posts Feed */}
+                                <div className="space-y-4">
+                                    {mockPosts.map(post => (
+                                        <div
+                                            key={post.id}
+                                            className={`bg-white rounded-2xl p-6 border transition-all duration-200 hover:border-black/10 ${
+                                                post.pinned ? 'border-emerald-200/50 bg-emerald-50/30' : 'border-black/5'
+                                            }`}
+                                        >
+                                            {/* Post Header */}
+                                            <div className="flex items-start justify-between mb-4">
+                                                <div className="flex items-center space-x-3">
+                                                    <div className={`w-10 h-10 rounded-full flex items-center justify-center text-white text-sm font-medium ${
+                                                        post.role === 'alumni' ? 'bg-gradient-to-br from-emerald-500 to-teal-600' : 'bg-gradient-to-br from-gray-400 to-gray-500'
+                                                    }`}>
+                                                        {post.author === 'Anonymous' ? '?' : post.author.split(' ').map(n => n[0]).join('')}
+                                                    </div>
+                                                    <div>
+                                                        <div className="flex items-center space-x-2">
+                                                            <p className="font-medium text-black">{post.author}</p>
+                                                            <span className={`px-2 py-0.5 text-xs rounded-full ${
+                                                                post.role === 'alumni'
+                                                                    ? 'bg-emerald-100 text-emerald-700'
+                                                                    : 'bg-gray-100 text-gray-700'
+                                                            }`}>
+                                                                {post.role}
+                                                            </span>
+                                                            {post.pinned && <Pin className="text-emerald-600" size={14} />}
+                                                        </div>
+                                                        <p className="text-xs text-black/40">{post.timestamp}</p>
                                                     </div>
                                                 </div>
-                                                <div className="flex-1">
-                                                    <div className="flex items-center space-x-3 mb-3">
-                                                        <span className="font-bold text-gray-900">{msg.user}</span>
-                                                        <span className={`px-3 py-1 rounded-xl text-xs font-semibold ${getUserTypeColor(msg.userType)}`}>
-                              {msg.year}
-                            </span>
-                                                        <span className="text-xs text-gray-400">{msg.timestamp}</span>
-                                                    </div>
-                                                    <p className="text-gray-800 mb-4 leading-relaxed">{msg.message}</p>
-                                                    <div className="flex items-center space-x-2">
-                                                        {msg.reactions.map((r, idx) => (
-                                                            <button
-                                                                key={idx}
-                                                                className="flex items-center space-x-2 px-3 py-2 bg-gray-50/80 backdrop-blur-sm rounded-xl text-sm hover:bg-gray-100/80 hover:scale-105 transition-all duration-200 border border-gray-200/30"
-                                                            >
-                                                                <span className="text-base">{r.emoji}</span>
-                                                                <span className="font-medium text-gray-700">{r.count}</span>
-                                                            </button>
-                                                        ))}
-                                                        <button className="p-2 bg-gray-50/80 backdrop-blur-sm rounded-xl hover:bg-gray-100/80 hover:scale-105 transition-all duration-200 border border-gray-200/30">
-                                                            <Smile size={16} className="text-gray-600" />
-                                                        </button>
-                                                    </div>
+
+                                                <div className="flex items-center space-x-2">
+                                                    <span className={`px-2 py-1 text-xs rounded-lg ${
+                                                        post.category === 'exam' ? 'bg-red-100 text-red-700' :
+                                                            post.category === 'strategy' ? 'bg-blue-100 text-blue-700' :
+                                                                'bg-violet-100 text-violet-700'
+                                                    }`}>
+                                                        {post.category}
+                                                    </span>
+                                                    {post.answered && <CheckCircle className="text-green-500" size={16} />}
                                                 </div>
                                             </div>
-                                        </div>
-                                    </div>
-                                ))}
-                            </div>
 
-                            {/* Composer */}
-                            <div className="p-6 bg-white/80 backdrop-blur-xl border-t border-white/20">
-                                <div className="flex items-center space-x-4">
-                                    <div className="flex-1 relative">
+                                            {/* Post Content */}
+                                            <h4 className="text-lg font-medium text-black mb-2">{post.title}</h4>
+                                            <p className="text-black/60 mb-4">{post.content}</p>
+
+                                            {/* Post Actions */}
+                                            <div className="flex items-center justify-between pt-4 border-t border-black/5">
+                                                <div className="flex items-center space-x-4">
+                                                    <button className="flex items-center space-x-1 text-sm text-black/50 hover:text-black transition-colors">
+                                                        <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 15l7-7 7 7" />
+                                                        </svg>
+                                                        <span>{post.upvotes}</span>
+                                                    </button>
+                                                    <button className="flex items-center space-x-1 text-sm text-black/50 hover:text-black transition-colors">
+                                                        <MessageSquare size={14} />
+                                                        <span>{post.replies} replies</span>
+                                                    </button>
+                                                </div>
+                                                <button className="text-sm text-black/50 hover:text-black transition-colors">
+                                                    Share
+                                                </button>
+                                            </div>
+                                        </div>
+                                    ))}
+                                </div>
+
+                                {/* Message Input */}
+                                <div className="sticky bottom-0 bg-white/95 backdrop-blur-xl p-4 rounded-2xl border border-black/5">
+                                    <div className="flex items-center space-x-3">
                                         <input
                                             type="text"
-                                            value={composer}
-                                            onChange={(e) => setComposer(e.target.value)}
-                                            placeholder="Share insights, ask questions, help peers..."
-                                            className="w-full px-6 py-4 bg-white/70 backdrop-blur-sm rounded-2xl border border-gray-200/50 focus:ring-2 focus:ring-blue-500/50 focus:border-blue-500/50 focus:bg-white/90 transition-all duration-300 text-gray-800 placeholder-gray-500"
+                                            value={message}
+                                            onChange={(e) => setMessage(e.target.value)}
+                                            placeholder="Ask a question or share a tip..."
+                                            className="flex-1 px-4 py-3 bg-black/[0.02] rounded-xl text-black placeholder-black/40 focus:outline-none focus:bg-black/[0.03] transition-colors"
                                         />
-                                        <div className="absolute right-4 top-1/2 -translate-y-1/2 flex space-x-2">
-                                            <button className="p-2 text-gray-400 hover:text-gray-600 hover:scale-110 transition-all duration-200" aria-label="Attach">
-                                                <Paperclip size={18} />
-                                            </button>
-                                            <button className="p-2 text-gray-400 hover:text-gray-600 hover:scale-110 transition-all duration-200" aria-label="Emoji">
-                                                <Smile size={18} />
-                                            </button>
-                                        </div>
+                                        <button className="p-3 bg-black text-white rounded-xl hover:bg-black/90 transition-colors">
+                                            <Send size={18} />
+                                        </button>
                                     </div>
-                                    <Button className="px-6 py-4">
-                                        <Send size={18} className="mr-3" />
-                                        <span>Send</span>
-                                    </Button>
+                                    <p className="text-xs text-black/40 mt-2">
+                                        Remember: Share strategies, not solutions
+                                    </p>
+                                </div>
+                            </div>
+                        )}
+                    </div>
+
+                    {/* Right Column - Sidebar */}
+                    <div className="space-y-6">
+                        {/* Member Stats */}
+                        <div className="bg-white rounded-2xl p-6 border border-black/5">
+                            <h3 className="text-black font-medium mb-4">Community</h3>
+                            <div className="space-y-3">
+                                <div className="flex items-center justify-between">
+                                    <span className="text-sm text-black/50">Current Students</span>
+                                    <span className="text-black font-medium">{course.currentStudents}</span>
+                                </div>
+                                <div className="flex items-center justify-between">
+                                    <span className="text-sm text-black/50">Alumni</span>
+                                    <span className="text-black font-medium">{course.alumni}</span>
+                                </div>
+                                <div className="flex items-center justify-between">
+                                    <span className="text-sm text-black/50">Prospective</span>
+                                    <span className="text-black font-medium">{course.prospective}</span>
                                 </div>
                             </div>
                         </div>
-                    )}
 
-                    {/* Other tabs below are stubbed with styled cards. Fill with real data when ready. */}
-                    {activeTab === 'course-intel' && (
-                        <div className="p-6 bg-gradient-to-br from-slate-50/80 to-gray-50/80 min-h-full">
-                            <div className="mb-8">
-                                <h2 className="text-3xl font-bold bg-gradient-to-r from-gray-900 to-gray-700 bg-clip-text text-transparent mb-4">
-                                    Course Intelligence
-                                </h2>
-                                <p className="text-gray-600 text-lg">Real insights from {course.alumni} students</p>
+                        {/* Course Insights */}
+                        <div className="bg-gradient-to-br from-emerald-50/50 to-teal-50/50 rounded-2xl p-6 border border-emerald-100/50">
+                            <div className="flex items-center space-x-2 mb-4">
+                                <Lightbulb className="text-emerald-600" size={20} />
+                                <h3 className="text-black font-medium">Course Insights</h3>
                             </div>
-
-                            <div className="grid md:grid-cols-4 gap-6 mb-8">
-                                <div className="bg-white/80 backdrop-blur-xl border border-white/20 rounded-2xl p-6 shadow-lg">
-                                    <div className="flex items-center justify-between">
-                                        <div>
-                                            <p className="text-3xl font-bold bg-gradient-to-r from-red-500 to-pink-600 bg-clip-text text-transparent">
-                                                {course.difficulty}/5
-                                            </p>
-                                            <p className="text-sm text-gray-600 font-medium">Difficulty Rating</p>
-                                        </div>
-                                        <div className="p-3 bg-gradient-to-br from-red-100 to-pink-100 rounded-2xl">
-                                            <AlertCircle className="text-red-500" size={24} />
-                                        </div>
-                                    </div>
-                                    <div className="mt-3 text-xs text-gray-500">Based on alumni reviews</div>
+                            <div className="space-y-3 text-sm">
+                                <div>
+                                    <p className="text-black/50 mb-1">Average time commitment</p>
+                                    <p className="text-black font-medium">8-10 hours/week</p>
                                 </div>
-
-                                <div className="bg-white/80 backdrop-blur-xl border border-white/20 rounded-2xl p-6 shadow-lg">
-                                    <div className="flex items-center justify-between">
-                                        <div>
-                                            <p className="text-3xl font-bold bg-gradient-to-r from-orange-500 to-amber-600 bg-clip-text text-transparent">~9h</p>
-                                            <p className="text-sm text-gray-600 font-medium">Hours/Week</p>
-                                        </div>
-                                        <div className="p-3 bg-gradient-to-br from-orange-100 to-amber-100 rounded-2xl">
-                                            <Clock className="text-orange-500" size={24} />
-                                        </div>
-                                    </div>
-                                    <div className="mt-3 text-xs text-gray-500">Avg. time commitment</div>
+                                <div>
+                                    <p className="text-black/50 mb-1">Most challenging topic</p>
+                                    <p className="text-black font-medium">Recursion & Trees</p>
                                 </div>
-
-                                <div className="bg-white/80 backdrop-blur-xl border border-white/20 rounded-2xl p-6 shadow-lg">
-                                    <div className="flex items-center justify-between">
-                                        <div>
-                                            <p className="text-3xl font-bold bg-gradient-to-r from-green-500 to-emerald-600 bg-clip-text text-transparent">B+</p>
-                                            <p className="text-sm text-gray-600 font-medium">Average Grade</p>
-                                        </div>
-                                        <div className="p-3 bg-gradient-to-br from-green-100 to-emerald-100 rounded-2xl">
-                                            <TrendingUp className="text-green-500" size={24} />
-                                        </div>
-                                    </div>
-                                    <div className="mt-3 text-xs text-gray-500">Historical class average</div>
-                                </div>
-
-                                <div className="bg-white/80 backdrop-blur-xl border border-white/20 rounded-2xl p-6 shadow-lg">
-                                    <div className="flex items-center justify-between">
-                                        <div>
-                                            <p className="text-3xl font-bold bg-gradient-to-r from-blue-500 to-cyan-600 bg-clip-text text-transparent">87%</p>
-                                            <p className="text-sm text-gray-600 font-medium">Pass Rate</p>
-                                        </div>
-                                        <div className="p-3 bg-gradient-to-br from-blue-100 to-cyan-100 rounded-2xl">
-                                            <CheckCircle className="text-blue-500" size={24} />
-                                        </div>
-                                    </div>
-                                    <div className="mt-3 text-xs text-gray-500">C+ or higher</div>
+                                <div>
+                                    <p className="text-black/50 mb-1">Best resource</p>
+                                    <p className="text-black font-medium">MIT OCW lectures</p>
                                 </div>
                             </div>
                         </div>
-                    )}
 
-                    {activeTab === 'mentorship' && (
-                        <div className="p-6 bg-gradient-to-br from-slate-50/80 to-gray-50/80 min-h-full">
-                            <div className="bg-white/80 backdrop-blur-xl border border-white/20 rounded-2xl p-8 shadow-lg">
-                                <h3 className="font-bold text-gray-900 text-xl mb-2">Alumni Mentorship</h3>
-                                <p className="text-gray-600 mb-4">Connect with students who’ve mastered this course.</p>
-                                <Button className="inline-flex">
-                                    <Users className="mr-2" size={18} />
-                                    Request Mentor
-                                </Button>
-                            </div>
-                        </div>
-                    )}
-
-                    {activeTab === 'resources' && (
-                        <div className="p-6 bg-gradient-to-br from-slate-50/80 to-gray-50/80 min-h-full">
-                            <div className="bg-white/80 backdrop-blur-xl border border-white/20 rounded-2xl p-8 shadow-lg">
-                                <h3 className="font-bold text-gray-900 text-xl mb-2">Study Resources</h3>
-                                <p className="text-gray-600 mb-4">Upload and share guides, notes, and videos.</p>
-                                <div className="flex gap-3">
-                                    <Button><Download size={16} className="mr-2" /> Browse</Button>
-                                    <Button variant="subtle"><Star size={16} className="mr-2" /> Top Rated</Button>
+                        {isJoined && (
+                            <div className="bg-white rounded-2xl p-6 border border-black/5">
+                                <h3 className="text-black font-medium mb-4">Quick Links</h3>
+                                <div className="space-y-2">
+                                    <button className="w-full text-left px-3 py-2 text-sm text-black/60 hover:text-black hover:bg-black/[0.02] rounded-lg transition-colors duration-200 flex items-center justify-between group">
+                                        <span>Course Syllabus</span>
+                                        <ChevronRight size={14} className="group-hover:translate-x-0.5 transition-transform" />
+                                    </button>
+                                    <button className="w-full text-left px-3 py-2 text-sm text-black/60 hover:text-black hover:bg-black/[0.02] rounded-lg transition-colors duration-200 flex items-center justify-between group">
+                                        <span>Office Hours</span>
+                                        <ChevronRight size={14} className="group-hover:translate-x-0.5 transition-transform" />
+                                    </button>
+                                    <button className="w-full text-left px-3 py-2 text-sm text-black/60 hover:text-black hover:bg-black/[0.02] rounded-lg transition-colors duration-200 flex items-center justify-between group">
+                                        <span>Study Groups</span>
+                                        <ChevronRight size={14} className="group-hover:translate-x-0.5 transition-transform" />
+                                    </button>
                                 </div>
                             </div>
-                        </div>
-                    )}
-
-                    {activeTab === 'sessions' && (
-                        <div className="p-6 bg-gradient-to-br from-slate-50/80 to-gray-50/80 min-h-full">
-                            <div className="bg-white/80 backdrop-blur-xl border border-white/20 rounded-2xl p-8 shadow-lg">
-                                <h3 className="font-bold text-gray-900 text-xl mb-2">Study Sessions</h3>
-                                <p className="text-gray-600 mb-4">Join or create focused study blocks.</p>
-                                <Button><Plus size={16} className="mr-2" /> Create Session</Button>
-                            </div>
-                        </div>
-                    )}
+                        )}
+                    </div>
                 </div>
             </div>
-
-            {/* Chat Sidebar */}
-            {showChat && (
-                <div className="w-96 bg-white/90 backdrop-blur-xl border-l border-white/20 shadow-xl flex flex-col">
-                    <div className="p-6 border-b border-white/20 bg-gradient-to-r from-white/90 to-gray-50/90">
-                        <div className="flex items-center justify-between mb-4">
-                            <h3 className="text-xl font-bold text-gray-900">Live Chat</h3>
-                            <button
-                                onClick={() => setShowChat(false)}
-                                className="p-2 text-gray-400 hover:text-gray-600 hover:bg-gray-100/80 rounded-xl transition-all duration-200"
-                                aria-label="Close chat"
-                            >
-                                <X size={20} />
-                            </button>
-                        </div>
-                        <div className="flex items-center space-x-2">
-                            <div className="flex -space-x-2">
-                                {onlineUsers.map((u) => (
-                                    <div key={u.id} className="relative w-8 h-8 bg-gradient-to-br from-gray-100 to-gray-200 rounded-full border-2 border-white flex items-center justify-center text-sm">
-                                        {u.avatar}
-                                        <span className={`absolute -bottom-0 -right-0 w-2.5 h-2.5 rounded-full border-2 border-white ${getStatusColor(u.status as any)}`} />
-                                    </div>
-                                ))}
-                            </div>
-                            <span className="text-sm text-gray-600">
-                {onlineUsers.filter(u => u.status === 'online').length} online now
-              </span>
-                        </div>
-                    </div>
-
-                    <div className="flex-1 overflow-y-auto p-4 space-y-4">
-                        {chatMessages.map((msg) => (
-                            <div key={msg.id} className={`flex ${msg.user === 'You' ? 'justify-end' : 'justify-start'}`}>
-                                <div className={`max-w-[75%] ${msg.user === 'You' ? 'order-2' : 'order-1'}`}>
-                                    <div className="flex items-center space-x-2 mb-1">
-                                        {msg.user !== 'You' && <span className="text-xs font-semibold text-gray-700">{msg.user}</span>}
-                                        <span className="text-xs text-gray-500">{msg.timestamp}</span>
-                                    </div>
-                                    <div
-                                        className={`rounded-2xl px-4 py-3 ${
-                                            msg.user === 'You'
-                                                ? 'bg-gradient-to-r from-blue-500 to-blue-600 text-white'
-                                                : 'bg-gray-100/80 text-gray-800 border border-gray-200/50'
-                                        }`}
-                                    >
-                                        {msg.message}
-                                    </div>
-                                </div>
-                            </div>
-                        ))}
-                        <div ref={chatEndRef} />
-                    </div>
-
-                    <div className="p-4 bg-white/80 backdrop-blur-xl border-t border-white/20">
-                        <div className="flex items-center space-x-3">
-                            <input
-                                type="text"
-                                value={chatMessage}
-                                onChange={(e) => setChatMessage(e.target.value)}
-                                onKeyDown={(e) => e.key === 'Enter' && handleSendChatMessage()}
-                                placeholder="Type a message..."
-                                className="flex-1 px-4 py-3 bg-gray-50/70 backdrop-blur-sm rounded-xl border border-gray-200/50 focus:ring-2 focus:ring-blue-500/50 focus:border-blue-500/50 focus:bg-white/90 transition-all duration-300 text-gray-800 placeholder-gray-500 text-sm"
-                            />
-                            <button className="p-3 text-gray-400 hover:text-gray-600 transition-all duration-200" aria-label="Attach file">
-                                <Paperclip size={20} />
-                            </button>
-                            <button
-                                onClick={handleSendChatMessage}
-                                className="p-3 bg-gradient-to-r from-blue-500 to-blue-600 text-white rounded-xl hover:from-blue-600 hover:to-blue-700 transition-all duration-300 shadow-lg shadow-blue-500/25"
-                                aria-label="Send message"
-                            >
-                                <Send size={18} />
-                            </button>
-                        </div>
-                    </div>
-                </div>
-            )}
         </div>
     );
 }
