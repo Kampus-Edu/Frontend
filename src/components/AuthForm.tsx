@@ -24,7 +24,6 @@ export default function AuthPage() {
 
     return (
         <div className="min-h-screen bg-white flex relative overflow-hidden">
-            {/* Subtle grid background */}
             <div
                 className="absolute inset-0 opacity-[0.015] pointer-events-none"
                 style={{
@@ -33,7 +32,6 @@ export default function AuthPage() {
                 }}
             />
 
-            {/* Decorative doodles */}
             <div className="absolute inset-0 overflow-hidden pointer-events-none">
                 <svg className="absolute top-24 left-16 w-20 h-20 text-purple-200/20" viewBox="0 0 100 100">
                     <circle cx="50" cy="50" r="40" fill="none" stroke="currentColor" strokeWidth="2" strokeDasharray="8,8" />
@@ -60,7 +58,7 @@ export default function AuthPage() {
                                 <BookOpen className="text-white" size={19} strokeWidth={2.5} />
                             </div>
                         </div>
-                        <span className="text-xl font-semibold text-gray-900 tracking-tight">GroupLearn</span>
+                        <span className="text-xl font-semibold text-gray-900 tracking-tight">Kampus</span>
                     </Link>
 
                     {/* Header */}

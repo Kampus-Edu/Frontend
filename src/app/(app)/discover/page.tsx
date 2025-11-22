@@ -120,7 +120,7 @@ export default function DiscoverPage() {
                                 <BookOpen className="text-white" size={17} strokeWidth={2.5} />
                             </div>
                         </div>
-                        <span className="text-[17px] font-semibold text-gray-900 tracking-tight">GroupLearn</span>
+                        <span className="text-[17px] font-semibold text-gray-900 tracking-tight">Kampus</span>
                     </div>
 
                     <div className="flex items-center justify-between">

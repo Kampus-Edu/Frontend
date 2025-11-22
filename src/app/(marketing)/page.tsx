@@ -17,7 +17,7 @@ export default function LandingPage() {
             {/* Subtle grid background - fixed to viewport */}
             <div className="fixed inset-0 pointer-events-none">
                 <div
-                    className="absolute inset-0 opacity-[0.015]"
+                    className="absolute inset-0 opacity-[0.3]"
                     style={{
                         backgroundImage: `radial-gradient(circle at 1px 1px, rgb(139, 92, 246) 1px, transparent 0)`,
                         backgroundSize: '48px 48px'
@@ -38,7 +38,7 @@ export default function LandingPage() {
                                     <BookOpen className="text-white" size={17} strokeWidth={2.5} />
                                 </div>
                             </div>
-                            <span className="text-[17px] font-semibold text-gray-900 tracking-tight">GroupLearn</span>
+                            <span className="text-[17px] font-semibold text-gray-900 tracking-tight">Kampus</span>
                         </Link>
 
                         <div className="flex items-center gap-2">
@@ -250,7 +250,7 @@ export default function LandingPage() {
                             </svg>
                         </div>
                         <p className="text-xl text-gray-700 mb-6 leading-relaxed pl-4">
-                            The MAAC 3021 room saved my semester. Alumni shared study strategies that actually worked,
+                            The MAAC 3021 room saved my ahh this semester. Alumni shared study strategies that actually worked,
                             and I connected with classmates I wouldn't have met otherwise.
                         </p>
                         <div className="flex items-center gap-3 pl-4">
@@ -298,9 +298,9 @@ export default function LandingPage() {
                         <div className="w-7 h-7 bg-gradient-to-br from-purple-600 to-purple-700 rounded-lg flex items-center justify-center shadow-md shadow-purple-600/25">
                             <BookOpen className="text-white" size={14} strokeWidth={2.5} />
                         </div>
-                        <span className="font-semibold text-gray-900">GroupLearn</span>
+                        <span className="font-semibold text-gray-900">Kampus</span>
                     </Link>
-                    <p className="text-sm text-gray-600">© 2025 GroupLearn. Built for students, by students.</p>
+                    <p className="text-sm text-gray-600">© 2025 Kampus. Built for students, by students.</p>
                 </div>
             </footer>
         </div>
