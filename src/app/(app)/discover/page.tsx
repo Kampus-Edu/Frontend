@@ -1,137 +1,373 @@
-// DiscoverPage.js - Redesigned for Professional Browsing
-
 'use client';
 import { useState, useMemo } from 'react';
-import Link from 'next/link';
-import { BookOpen, BadgeCheck, Search, ChevronRight, MessageCircle } from 'lucide-react';
-import { Button } from '@/components/ui/Button';
-import { Badge } from '@/components/ui/Badge';
-import { allCourses } from '@/lib/data'; // Assumed data structure for course list
+import { BookOpen, Users, TrendingUp, Hash, Search, Filter, X, Star, ChevronDown } from 'lucide-react';
 
-// Mock data for the sidebar (Joined Rooms)
-const joinedRoomsMock = [
-    { id: 'maac1021', name: 'Calc I', active: 3 },
-    { id: 'cs3011', name: 'Software Eng', active: 7 },
-    { id: 'philo2001', name: 'Ethics', active: 1 },
+const allCourses = [
+    {
+        id: 'maac3021',
+        code: 'MAAC 3021',
+        name: 'Advanced Algorithms',
+        department: 'Computer Science',
+        year: 3,
+        professor: 'Dr. Sarah Chen',
+        description: 'Deep dive into algorithm design and analysis. Covers dynamic programming, greedy algorithms, and NP-completeness.',
+        currentStudents: 45,
+        alumni: 180,
+        prospective: 89,
+        popularity: 94,
+        difficulty: 4,
+        color: 'bg-blue-500',
+        tags: ['Theory', 'Problem Solving', 'Challenging']
+    },
+    {
+        id: 'cs2110',
+        code: 'CS 2110',
+        name: 'Data Structures',
+        department: 'Computer Science',
+        year: 2,
+        professor: 'Prof. Michael Torres',
+        description: 'Fundamental data structures including trees, graphs, and hash tables. Essential for technical interviews.',
+        currentStudents: 78,
+        alumni: 320,
+        prospective: 156,
+        popularity: 98,
+        difficulty: 3,
+        color: 'bg-emerald-500',
+        tags: ['Core', 'Practical', 'Interview Prep']
+    },
+    {
+        id: 'math2421',
+        code: 'MATH 2421',
+        name: 'Linear Algebra',
+        department: 'Mathematics',
+        year: 2,
+        professor: 'Dr. James Wilson',
+        description: 'Vector spaces, matrices, eigenvalues, and linear transformations with applications to machine learning.',
+        currentStudents: 62,
+        alumni: 245,
+        prospective: 103,
+        popularity: 91,
+        difficulty: 4,
+        color: 'bg-purple-500',
+        tags: ['Theory', 'ML Foundation']
+    }
 ];
 
-export default function DiscoverPage(){
-    const [courseFilter, setCourseFilter] = useState<'all'|string>('all');
-    const [yearFilter, setYearFilter] = useState<'all'|string>('all');
+const joinedCourses = [
+    { id: 'cs2383', name: 'Data Structures', code: 'CS2383', lastActive: '2 hours ago', unread: 3 },
+    { id: 'maac3021', name: 'Culture Matters', code: 'MAAC3021', lastActive: '1 day ago', unread: 0 }
+];
 
-    // ... filtering logic remains the same ...
-    const filtered = useMemo(() =>
-            allCourses
-                .filter(c => courseFilter==='all' || c.department.toLowerCase()===courseFilter.toLowerCase())
-                .filter(c => yearFilter==='all' || c.year===parseInt(yearFilter as string, 10))
-                .sort((a,b)=>b.popularity-a.popularity),
-        [courseFilter, yearFilter]
-    );
+export default function DiscoverPage() {
+    const [departmentFilter, setDepartmentFilter] = useState('all');
+    const [yearFilter, setYearFilter] = useState('all');
+    const [searchQuery, setSearchQuery] = useState('');
+    const [sortBy, setSortBy] = useState('popularity');
+    const [showFilters, setShowFilters] = useState(false);
+
+    const filtered = useMemo(() => {
+        let courses = allCourses;
+
+        if (searchQuery) {
+            courses = courses.filter(c =>
+                c.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+                c.code.toLowerCase().includes(searchQuery.toLowerCase()) ||
+                c.professor.toLowerCase().includes(searchQuery.toLowerCase())
+            );
+        }
+
+        if (departmentFilter !== 'all') {
+            courses = courses.filter(c => c.department.toLowerCase() === departmentFilter.toLowerCase());
+        }
+
+        if (yearFilter !== 'all') {
+            courses = courses.filter(c => c.year === parseInt(yearFilter, 10));
+        }
+
+        return courses.sort((a, b) => {
+            switch (sortBy) {
+                case 'popularity':
+                    return b.popularity - a.popularity;
+                case 'difficulty':
+                    return a.difficulty - b.difficulty;
+                case 'students':
+                    return b.currentStudents - a.currentStudents;
+                default:
+                    return 0;
+            }
+        });
+    }, [searchQuery, departmentFilter, yearFilter, sortBy]);
 
     return (
-        <div className="min-h-screen bg-slate-50/50 flex">
+        <div className="min-h-screen bg-white flex">
+            {/* Sidebar */}
+            <div className="w-80 bg-gradient-to-b from-purple-50/30 via-white to-white border-r border-gray-200/60 flex flex-col h-screen sticky top-0">
+                {/* Subtle dot pattern */}
+                <div
+                    className="absolute inset-0 opacity-[0.02] pointer-events-none"
+                    style={{
+                        backgroundImage: `radial-gradient(circle at 2px 2px, rgb(139, 92, 246) 1px, transparent 0)`,
+                        backgroundSize: '24px 24px'
+                    }}
+                />
 
-            {/* Sidebar - Sleek and Clean Navigation */}
-            <div className="w-72 bg-white border-r border-slate-100 shadow-xl shadow-slate-200/10 flex flex-col pt-4">
-                <div className="p-6 border-b border-slate-100/80 mb-6">
-                    <Link href="/" className="flex items-center space-x-3">
-                        <div className="w-8 h-8 bg-gradient-to-br from-emerald-500 to-teal-600 rounded-lg flex items-center justify-center shadow-sm"><BookOpen className="text-white" size={16}/></div>
-                        <h1 className="text-lg font-bold text-slate-900">GroupLearn</h1>
-                    </Link>
+                {/* Logo & User */}
+                <div className="p-6 border-b border-gray-200/60 relative">
+                    <div className="flex items-center gap-2.5 mb-6">
+                        <div className="relative">
+                            <div className="absolute inset-0 bg-purple-600 rounded-xl blur-md opacity-25" />
+                            <div className="relative w-9 h-9 bg-gradient-to-br from-purple-600 to-purple-700 rounded-xl flex items-center justify-center shadow-lg shadow-purple-600/25">
+                                <BookOpen className="text-white" size={17} strokeWidth={2.5} />
+                            </div>
+                        </div>
+                        <span className="text-[17px] font-semibold text-gray-900 tracking-tight">GroupLearn</span>
+                    </div>
+
+                    <div className="flex items-center justify-between">
+                        <div className="flex items-center gap-3">
+                            <div className="w-10 h-10 bg-gradient-to-br from-purple-400 to-purple-600 rounded-full shadow-md" />
+                            <div>
+                                <p className="text-sm font-medium text-gray-900">Wale A.</p>
+                                <p className="text-xs text-gray-500">UNB Student</p>
+                            </div>
+                        </div>
+                    </div>
                 </div>
 
-                <div className="px-6 space-y-6 flex-1">
-                    {/* Main Nav Links */}
-                    <nav className="space-y-2">
-                        <h3 className="text-xs font-semibold uppercase text-slate-500 tracking-wider mb-2">Navigation</h3>
-                        <Link href="/discover" className="flex items-center p-3 rounded-xl bg-emerald-50 text-emerald-700 font-medium transition-all duration-200">
-                            <Search size={18} className="mr-3"/>
-                            Discover Courses
-                        </Link>
-                        <Link href="/dashboard" className="flex items-center p-3 rounded-xl text-slate-600 hover:bg-slate-100 hover:text-slate-900 transition-all duration-200">
-                            <BadgeCheck size={18} className="mr-3"/>
-                            My Dashboard
-                        </Link>
-                    </nav>
-
-                    {/* Joined Rooms */}
-                    <div className="pt-6 border-t border-slate-100">
-                        <h3 className="text-xs font-semibold uppercase text-slate-500 tracking-wider mb-3">Joined Rooms</h3>
-                        <nav className="space-y-2">
-                            {joinedRoomsMock.map(room => (
-                                <Link key={room.id} href={`/course/${room.id}`} className="flex items-center justify-between p-3 rounded-xl text-slate-700 hover:bg-slate-100 transition-all duration-200">
-                                    <span className="truncate">{room.name}</span>
-                                    <Badge tone="accent" className="ml-2 py-0.5 px-2 text-xs">{room.active} active</Badge>
-                                </Link>
-                            ))}
-                        </nav>
+                {/* Joined Rooms */}
+                <div className="flex-1 overflow-y-auto p-4 relative">
+                    <div className="flex items-center justify-between mb-3 px-2">
+                        <h3 className="text-xs font-semibold text-gray-500 uppercase tracking-wider">Your Rooms</h3>
+                        <span className="text-xs font-medium text-gray-400">{joinedCourses.length}</span>
                     </div>
+
+                    <div className="space-y-1">
+                        {joinedCourses.map(course => (
+                            <button
+                                key={course.id}
+                                className="w-full flex items-center justify-between px-3 py-2.5 rounded-xl hover:bg-purple-50 transition-all duration-200 group"
+                            >
+                                <div className="flex items-center gap-3">
+                                    <div className="w-2 h-2 bg-purple-500 rounded-full" />
+                                    <div className="text-left">
+                                        <p className="text-sm font-medium text-gray-900 group-hover:text-purple-600 transition-colors">
+                                            {course.code}
+                                        </p>
+                                        <p className="text-xs text-gray-500">{course.lastActive}</p>
+                                    </div>
+                                </div>
+                                {course.unread > 0 && (
+                                    <span className="px-2 py-0.5 bg-purple-600 text-white text-xs font-semibold rounded-full shadow-sm">
+                                        {course.unread}
+                                    </span>
+                                )}
+                            </button>
+                        ))}
+                    </div>
+
+                    {/* Activity Stats */}
+                    <div className="mt-6 p-4 bg-gradient-to-br from-purple-50 to-purple-100/50 rounded-xl border border-purple-200/40 shadow-sm">
+                        <h4 className="text-xs font-semibold text-gray-700 uppercase tracking-wider mb-3">Your Activity</h4>
+                        <div className="space-y-2">
+                            <div className="flex items-center justify-between text-sm">
+                                <span className="text-gray-600">Questions</span>
+                                <span className="font-semibold text-purple-600">12</span>
+                            </div>
+                            <div className="flex items-center justify-between text-sm">
+                                <span className="text-gray-600">Answers</span>
+                                <span className="font-semibold text-purple-600">28</span>
+                            </div>
+                            <div className="flex items-center justify-between text-sm">
+                                <span className="text-gray-600">Helpful votes</span>
+                                <span className="font-semibold text-purple-600">156</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div className="p-4 border-t border-gray-200/60 relative">
+                    <button className="w-full flex items-center justify-center gap-2 py-2.5 text-sm text-gray-600 hover:text-purple-600 transition-colors">
+                        <Search size={16} />
+                        <span>Discover more courses</span>
+                    </button>
                 </div>
             </div>
 
-
             {/* Main Content */}
-            <div className="flex-1 flex flex-col">
-                <div className="bg-white border-b border-slate-100 p-8 shadow-sm">
-                    <div className="flex items-center justify-between">
-                        <div>
-                            <h2 className="text-3xl font-bold text-slate-900 mb-1">Discover Course Rooms</h2>
-                            <p className="text-slate-600 font-light">Find and join course communities at your university, sorted by **Popularity**.</p>
+            <div className="flex-1 flex flex-col overflow-hidden">
+                {/* Header */}
+                <div className="sticky top-0 bg-white/95 backdrop-blur-xl border-b border-gray-200/60 z-40 shadow-sm">
+                    <div className="p-6">
+                        <div className="flex items-center justify-between mb-6">
+                            <div>
+                                <h1 className="text-3xl font-bold text-gray-900 tracking-tight">Discover Courses</h1>
+                                <p className="text-gray-600 mt-1">Find your next learning community</p>
+                            </div>
+
+                            <button
+                                onClick={() => setShowFilters(!showFilters)}
+                                className={`flex items-center gap-2 px-4 py-2 rounded-lg font-medium text-sm transition-all ${
+                                    showFilters
+                                        ? 'bg-purple-600 text-white shadow-lg shadow-purple-600/25'
+                                        : 'bg-gray-100 text-gray-700 hover:bg-gray-200 border border-gray-200'
+                                }`}
+                            >
+                                <Filter size={16} />
+                                <span>Filters</span>
+                                {(departmentFilter !== 'all' || yearFilter !== 'all') && !showFilters && (
+                                    <span className="w-2 h-2 bg-purple-500 rounded-full" />
+                                )}
+                            </button>
                         </div>
-                        <div className="flex items-center space-x-4">
-                            {/* Filter Dropdowns - Taller and cleaner */}
-                            <select value={courseFilter} onChange={(e)=>setCourseFilter(e.target.value)} className="h-11 px-4 bg-white border border-slate-300 rounded-xl text-slate-700 focus:ring-2 focus:ring-emerald-500/50 transition">
-                                <option value="all">All Departments</option>
-                                <option value="computer science">Computer Science</option>
-                                <option value="mathematics">Mathematics</option>
-                                <option value="physics">Physics</option>
-                                <option value="chemistry">Chemistry</option>
-                                <option value="economics">Economics</option>
-                                <option value="philosophy">Philosophy</option>
-                            </select>
-                            <select value={yearFilter} onChange={(e)=>setYearFilter(e.target.value)} className="h-11 px-4 bg-white border border-slate-300 rounded-xl text-slate-700 focus:ring-2 focus:ring-emerald-500/50 transition">
-                                <option value="all">All Years</option>
-                                <option value="1">Year 1</option>
-                                <option value="2">Year 2</option>
-                                <option value="3">Year 3</option>
-                                <option value="4">Year 4</option>
-                            </select>
+
+                        {/* Search */}
+                        <div className="relative">
+                            <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400" size={20} />
+                            <input
+                                type="text"
+                                value={searchQuery}
+                                onChange={(e) => setSearchQuery(e.target.value)}
+                                placeholder="Search courses, professors, or topics..."
+                                className="w-full pl-12 pr-4 py-3 bg-gray-50 border border-gray-200 rounded-xl text-gray-900 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-purple-500/20 focus:border-purple-500 focus:bg-white transition-all"
+                            />
+                        </div>
+
+                        {/* Filter Panel */}
+                        {showFilters && (
+                            <div className="mt-4 p-4 bg-gradient-to-br from-purple-50 to-blue-50/30 rounded-xl border border-purple-200/40">
+                                <div className="flex flex-wrap gap-3">
+                                    <select
+                                        value={departmentFilter}
+                                        onChange={(e) => setDepartmentFilter(e.target.value)}
+                                        className="px-4 py-2 bg-white border border-gray-200 rounded-lg text-sm font-medium focus:outline-none focus:ring-2 focus:ring-purple-500/20 focus:border-purple-500 transition-all shadow-sm"
+                                    >
+                                        <option value="all">All Departments</option>
+                                        <option value="Computer Science">Computer Science</option>
+                                        <option value="Mathematics">Mathematics</option>
+                                        <option value="Physics">Physics</option>
+                                    </select>
+
+                                    <select
+                                        value={yearFilter}
+                                        onChange={(e) => setYearFilter(e.target.value)}
+                                        className="px-4 py-2 bg-white border border-gray-200 rounded-lg text-sm font-medium focus:outline-none focus:ring-2 focus:ring-purple-500/20 focus:border-purple-500 transition-all shadow-sm"
+                                    >
+                                        <option value="all">All Years</option>
+                                        <option value="1">First Year</option>
+                                        <option value="2">Second Year</option>
+                                        <option value="3">Third Year</option>
+                                        <option value="4">Fourth Year</option>
+                                    </select>
+
+                                    <select
+                                        value={sortBy}
+                                        onChange={(e) => setSortBy(e.target.value)}
+                                        className="px-4 py-2 bg-white border border-gray-200 rounded-lg text-sm font-medium focus:outline-none focus:ring-2 focus:ring-purple-500/20 focus:border-purple-500 transition-all shadow-sm"
+                                    >
+                                        <option value="popularity">Most Popular</option>
+                                        <option value="students">Most Active</option>
+                                        <option value="difficulty">Easiest First</option>
+                                    </select>
+
+                                    {(departmentFilter !== 'all' || yearFilter !== 'all' || searchQuery) && (
+                                        <button
+                                            onClick={() => {
+                                                setDepartmentFilter('all');
+                                                setYearFilter('all');
+                                                setSearchQuery('');
+                                            }}
+                                            className="flex items-center gap-1 px-4 py-2 text-sm text-purple-600 hover:text-purple-700 font-medium transition-colors"
+                                        >
+                                            <X size={14} />
+                                            <span>Clear all</span>
+                                        </button>
+                                    )}
+                                </div>
+                            </div>
+                        )}
+
+                        {/* Results count */}
+                        <div className="mt-4 flex items-center justify-between">
+                            <p className="text-sm text-gray-600">
+                                <span className="font-semibold text-gray-900">{filtered.length}</span> courses found
+                            </p>
+                            <div className="flex items-center gap-2 px-3 py-1.5 bg-purple-50 border border-purple-200/40 rounded-lg">
+                                <TrendingUp size={14} className="text-purple-600" />
+                                <span className="text-sm text-purple-700 font-medium">Trending</span>
+                            </div>
                         </div>
                     </div>
                 </div>
 
-                <div className="flex-1 overflow-y-auto p-8">
-                    <div className="grid md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8">
+                {/* Course Grid */}
+                <div className="flex-1 overflow-y-auto p-6 bg-gradient-to-b from-gray-50/30 to-white">
+                    <div className="grid md:grid-cols-2 xl:grid-cols-3 gap-5">
                         {filtered.map(course => (
-                            <div key={course.id} className="group transition hover:scale-[1.01]">
-                                <Link href={`/course/${course.id}`} className="block bg-white border border-slate-100 rounded-2xl p-6 shadow-lg shadow-slate-100/50 hover:shadow-xl hover:shadow-slate-200/70 transition-all duration-300">
-                                    <div className="flex items-start justify-between mb-4">
-                                        <div className={`w-4 h-4 rounded-full ${course.color} shadow-sm`} />
-                                        <div className="flex items-center space-x-2">
-                                            <Badge tone="accent" className="text-xs font-semibold">{course.popularity}% POPULAR</Badge>
-                                        </div>
+                            <button
+                                key={course.id}
+                                className="group text-left bg-white border border-gray-200/60 rounded-xl p-6 hover:border-purple-300 hover:shadow-xl hover:shadow-purple-100/20 transition-all duration-300 hover:-translate-y-1"
+                            >
+                                <div className="flex items-start justify-between mb-4">
+                                    <div className="flex items-center gap-2">
+                                        <div className={`w-3 h-3 rounded-full ${course.color} shadow-sm`} />
+                                        <span className="text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                            {course.department}
+                                        </span>
                                     </div>
-                                    <h3 className="font-bold text-slate-900 text-xl mb-1">{course.name}</h3>
-                                    <p className="text-slate-500 text-sm mb-4">{course.code} • {course.department}</p>
-                                    <p className="text-slate-700 text-sm mb-5 font-light line-clamp-2">{course.description}</p>
+                                    <div className="px-2.5 py-1 bg-gradient-to-br from-purple-50 to-purple-100 border border-purple-200/40 rounded-md shadow-sm">
+                                        <span className="text-xs font-semibold text-purple-700">{course.popularity}%</span>
+                                    </div>
+                                </div>
 
-                                    <div className="flex items-center justify-between text-sm text-slate-600 pt-4 border-t border-slate-50/50">
-                                        <div className="flex items-center space-x-4">
-                                            <span className="flex items-center">
-                                                <Users size={16} className="text-emerald-500 mr-1"/> {course.currentStudents}
-                                            </span>
-                                            <span className="flex items-center">
-                                                <GraduationCap size={16} className="text-blue-500 mr-1"/> {course.alumni}
-                                            </span>
-                                        </div>
-                                        <div className="flex items-center space-x-1 font-semibold text-slate-800">
-                                            <span>⭐</span><span>{course.difficulty}/5</span>
-                                        </div>
+                                <h3 className="text-lg font-bold text-gray-900 mb-1 group-hover:text-purple-600 transition-colors">
+                                    {course.name}
+                                </h3>
+                                <p className="text-sm text-gray-600 mb-3">
+                                    {course.code} • {course.professor}
+                                </p>
+                                <p className="text-sm text-gray-700 mb-4 line-clamp-2 leading-relaxed">
+                                    {course.description}
+                                </p>
+
+                                <div className="flex flex-wrap gap-1.5 mb-4">
+                                    {course.tags.slice(0, 3).map((tag, i) => (
+                                        <span key={i} className="px-2.5 py-1 bg-gray-100 text-gray-700 text-xs font-medium rounded-md">
+                                            {tag}
+                                        </span>
+                                    ))}
+                                </div>
+
+                                <div className="flex items-center justify-between pt-4 border-t border-gray-200/60 text-sm">
+                                    <div className="flex items-center gap-3 text-gray-600">
+                                        <span className="flex items-center gap-1">
+                                            <Users size={14} />
+                                            <span className="font-medium">{course.currentStudents + course.alumni}</span>
+                                        </span>
+                                        <span className="flex items-center gap-1">
+                                            <TrendingUp size={14} />
+                                            <span className="font-medium">{course.popularity}%</span>
+                                        </span>
                                     </div>
-                                </Link>
-                            </div>
+                                    <div className="flex items-center gap-1 text-gray-600">
+                                        <Star size={14} className="fill-current" />
+                                        <span className="font-medium">{course.difficulty}/5</span>
+                                    </div>
+                                </div>
+                            </button>
                         ))}
                     </div>
+
+                    {filtered.length === 0 && (
+                        <div className="flex flex-col items-center justify-center py-20">
+                            <div className="w-16 h-16 bg-gray-100 rounded-2xl flex items-center justify-center mb-4">
+                                <Search className="text-gray-400" size={28} />
+                            </div>
+                            <h3 className="text-lg font-semibold text-gray-900 mb-2">No courses found</h3>
+                            <p className="text-sm text-gray-600 text-center max-w-sm">
+                                Try adjusting your filters or search query
+                            </p>
+                        </div>
+                    )}
                 </div>
             </div>
         </div>
