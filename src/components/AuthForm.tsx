@@ -27,16 +27,16 @@ export default function AuthPage() {
             <div
                 className="absolute inset-0 opacity-[0.015] pointer-events-none"
                 style={{
-                    backgroundImage: `radial-gradient(circle at 1px 1px, rgb(139, 92, 246) 1px, transparent 0)`,
+                    backgroundImage: `radial-gradient(circle at 1px 1px, rgb(64, 64, 64) 1px, transparent 0)`,
                     backgroundSize: '48px 48px'
                 }}
             />
 
             <div className="absolute inset-0 overflow-hidden pointer-events-none">
-                <svg className="absolute top-24 left-16 w-20 h-20 text-purple-200/20" viewBox="0 0 100 100">
+                <svg className="absolute top-24 left-16 w-20 h-20 text-gray-200/20" viewBox="0 0 100 100">
                     <circle cx="50" cy="50" r="40" fill="none" stroke="currentColor" strokeWidth="2" strokeDasharray="8,8" />
                 </svg>
-                <svg className="absolute bottom-32 right-24 w-16 h-16 text-blue-200/20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                <svg className="absolute bottom-32 right-24 w-16 h-16 text-gray-200/20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                     <path d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
                 </svg>
             </div>
@@ -53,8 +53,8 @@ export default function AuthPage() {
                     {/* Logo */}
                     <Link href="/" className="flex items-center gap-2.5 mb-8">
                         <div className="relative">
-                            <div className="absolute inset-0 bg-purple-600 rounded-xl blur-md opacity-25" />
-                            <div className="relative w-10 h-10 bg-gradient-to-br from-purple-600 to-purple-700 rounded-xl flex items-center justify-center shadow-lg shadow-purple-600/25">
+                            <div className="absolute inset-0 bg-gray-800 rounded-xl blur-md opacity-25" />
+                            <div className="relative w-10 h-10 bg-gradient-to-br from-gray-700 to-gray-900 rounded-xl flex items-center justify-center shadow-lg shadow-gray-800/25">
                                 <BookOpen className="text-white" size={19} strokeWidth={2.5} />
                             </div>
                         </div>
@@ -80,7 +80,7 @@ export default function AuthPage() {
                             <label className="block text-sm font-medium text-gray-700 mb-2">Email</label>
                             <div className="relative">
                                 <Mail className={`absolute left-3.5 top-1/2 -translate-y-1/2 transition-colors ${
-                                    focused === 'email' ? 'text-purple-500' : 'text-gray-400'
+                                    focused === 'email' ? 'text-gray-700' : 'text-gray-400'
                                 }`} size={18} />
                                 <input
                                     type="email"
@@ -89,7 +89,7 @@ export default function AuthPage() {
                                     onFocus={() => setFocused('email')}
                                     onBlur={() => setFocused('')}
                                     placeholder="you@university.edu"
-                                    className="w-full pl-11 pr-4 py-3 bg-white border border-gray-200 rounded-xl text-gray-900 placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-purple-500/20 focus:border-purple-500 transition-all shadow-sm"
+                                    className="w-full pl-11 pr-4 py-3 bg-white border border-gray-200 rounded-xl text-gray-900 placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-gray-500/20 focus:border-gray-500 transition-all shadow-sm"
                                 />
                             </div>
                         </div>
@@ -99,7 +99,7 @@ export default function AuthPage() {
                             <label className="block text-sm font-medium text-gray-700 mb-2">Password</label>
                             <div className="relative">
                                 <Lock className={`absolute left-3.5 top-1/2 -translate-y-1/2 transition-colors ${
-                                    focused === 'password' ? 'text-purple-500' : 'text-gray-400'
+                                    focused === 'password' ? 'text-gray-700' : 'text-gray-400'
                                 }`} size={18} />
                                 <input
                                     type="password"
@@ -108,7 +108,7 @@ export default function AuthPage() {
                                     onFocus={() => setFocused('password')}
                                     onBlur={() => setFocused('')}
                                     placeholder="••••••••"
-                                    className="w-full pl-11 pr-4 py-3 bg-white border border-gray-200 rounded-xl text-gray-900 placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-purple-500/20 focus:border-purple-500 transition-all shadow-sm"
+                                    className="w-full pl-11 pr-4 py-3 bg-white border border-gray-200 rounded-xl text-gray-900 placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-gray-500/20 focus:border-gray-500 transition-all shadow-sm"
                                 />
                             </div>
                         </div>
@@ -119,14 +119,14 @@ export default function AuthPage() {
                                 <label className="block text-sm font-medium text-gray-700 mb-2">University</label>
                                 <div className="relative">
                                     <GraduationCap className={`absolute left-3.5 top-1/2 -translate-y-1/2 pointer-events-none z-10 transition-colors ${
-                                        focused === 'university' ? 'text-purple-500' : 'text-gray-400'
+                                        focused === 'university' ? 'text-gray-700' : 'text-gray-400'
                                     }`} size={18} />
                                     <select
                                         value={university}
                                         onChange={(e) => setUniversity(e.target.value)}
                                         onFocus={() => setFocused('university')}
                                         onBlur={() => setFocused('')}
-                                        className="w-full pl-11 pr-10 py-3 bg-white border border-gray-200 rounded-xl text-gray-900 focus:outline-none focus:ring-2 focus:ring-purple-500/20 focus:border-purple-500 transition-all appearance-none cursor-pointer shadow-sm"
+                                        className="w-full pl-11 pr-10 py-3 bg-white border border-gray-200 rounded-xl text-gray-900 focus:outline-none focus:ring-2 focus:ring-gray-500/20 focus:border-gray-500 transition-all appearance-none cursor-pointer shadow-sm"
                                     >
                                         <option value="">Select your university</option>
                                         {universities.map((u, i) => (
@@ -140,7 +140,7 @@ export default function AuthPage() {
 
                         {/* Submit */}
                         <Link href="/discover">
-                            <button className="group w-full h-12 bg-gradient-to-br from-purple-600 to-purple-700 hover:from-purple-700 hover:to-purple-800 text-white rounded-xl font-medium transition-all shadow-lg shadow-purple-600/25 hover:shadow-xl hover:shadow-purple-600/35 mt-6 flex items-center justify-center gap-2">
+                            <button className="group w-full h-12 bg-gradient-to-br from-gray-700 to-gray-900 hover:from-gray-800 hover:to-gray-950 text-white rounded-xl font-medium transition-all shadow-lg shadow-gray-800/25 hover:shadow-xl hover:shadow-gray-800/35 mt-6 flex items-center justify-center gap-2">
                                 <span>{mode === 'login' ? 'Sign in' : 'Create account'}</span>
                                 <ArrowRight size={18} className="group-hover:translate-x-0.5 transition-transform" strokeWidth={2.5} />
                             </button>
@@ -148,7 +148,7 @@ export default function AuthPage() {
 
                         {mode === 'login' && (
                             <div className="text-center">
-                                <button className="text-sm text-purple-600 hover:text-purple-700 font-medium transition-colors">
+                                <button className="text-sm text-gray-700 hover:text-gray-900 font-medium transition-colors">
                                     Forgot password?
                                 </button>
                             </div>
@@ -162,7 +162,7 @@ export default function AuthPage() {
                         </span>
                         <button
                             onClick={() => setMode(mode === 'login' ? 'signup' : 'login')}
-                            className="text-purple-600 hover:text-purple-700 font-medium transition-colors"
+                            className="text-gray-800 hover:text-gray-900 font-medium transition-colors"
                         >
                             {mode === 'login' ? 'Sign up' : 'Sign in'}
                         </button>
@@ -175,7 +175,7 @@ export default function AuthPage() {
                             <span>Secure & encrypted</span>
                         </div>
                         <div className="flex items-center gap-1.5">
-                            <div className="w-1.5 h-1.5 bg-purple-500 rounded-full" />
+                            <div className="w-1.5 h-1.5 bg-gray-600 rounded-full" />
                             <span>2,400+ students</span>
                         </div>
                     </div>
@@ -183,7 +183,7 @@ export default function AuthPage() {
             </div>
 
             {/* Right side - Visual */}
-            <div className="hidden lg:flex flex-1 bg-gradient-to-br from-purple-600 via-purple-700 to-purple-800 relative overflow-hidden items-center justify-center">
+            <div className="hidden lg:flex flex-1 bg-gradient-to-br from-gray-700 via-gray-800 to-gray-900 relative overflow-hidden items-center justify-center">
                 {/* Decorative grid */}
                 <div
                     className="absolute inset-0 opacity-10"

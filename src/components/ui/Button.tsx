@@ -9,7 +9,7 @@ type Props = React.ButtonHTMLAttributes<HTMLButtonElement> & {
 export function Button({ variant = "primary", className = "", children, ...props }: Props) {
     const base = "inline-flex items-center justify-center rounded-xl px-4 py-2 text-sm font-semibold transition";
     const styles = {
-        primary: "bg-emerald-600 text-white hover:bg-emerald-700 shadow-sm",
+        primary: "bg-gray-800 text-white hover:bg-gray-900 shadow-sm shadow-gray-800/25",
         subtle: "bg-white text-slate-700 border border-slate-200 hover:bg-slate-50",
     } as const;
     return (

@@ -48,7 +48,7 @@ const allCourses = [
         prospective: 103,
         popularity: 91,
         difficulty: 4,
-        color: 'bg-purple-500',
+        color: 'bg-gray-600',
         tags: ['Theory', 'ML Foundation']
     }
 ];
@@ -101,12 +101,12 @@ export default function DiscoverPage() {
     return (
         <div className="min-h-screen bg-white flex">
             {/* Sidebar */}
-            <div className="w-80 bg-gradient-to-b from-purple-50/30 via-white to-white border-r border-gray-200/60 flex flex-col h-screen sticky top-0">
+            <div className="w-80 bg-gradient-to-b from-gray-50/30 via-white to-white border-r border-gray-200/60 flex flex-col h-screen sticky top-0">
                 {/* Subtle dot pattern */}
                 <div
                     className="absolute inset-0 opacity-[0.02] pointer-events-none"
                     style={{
-                        backgroundImage: `radial-gradient(circle at 2px 2px, rgb(139, 92, 246) 1px, transparent 0)`,
+                        backgroundImage: `radial-gradient(circle at 2px 2px, rgb(64, 64, 64) 1px, transparent 0)`,
                         backgroundSize: '24px 24px'
                     }}
                 />
@@ -115,8 +115,8 @@ export default function DiscoverPage() {
                 <div className="p-6 border-b border-gray-200/60 relative">
                     <div className="flex items-center gap-2.5 mb-6">
                         <div className="relative">
-                            <div className="absolute inset-0 bg-purple-600 rounded-xl blur-md opacity-25" />
-                            <div className="relative w-9 h-9 bg-gradient-to-br from-purple-600 to-purple-700 rounded-xl flex items-center justify-center shadow-lg shadow-purple-600/25">
+                            <div className="absolute inset-0 bg-gray-800 rounded-xl blur-md opacity-25" />
+                            <div className="relative w-9 h-9 bg-gradient-to-br from-gray-700 to-gray-900 rounded-xl flex items-center justify-center shadow-lg shadow-gray-800/25">
                                 <BookOpen className="text-white" size={17} strokeWidth={2.5} />
                             </div>
                         </div>
@@ -125,7 +125,7 @@ export default function DiscoverPage() {
 
                     <div className="flex items-center justify-between">
                         <div className="flex items-center gap-3">
-                            <div className="w-10 h-10 bg-gradient-to-br from-purple-400 to-purple-600 rounded-full shadow-md" />
+                            <div className="w-10 h-10 bg-gradient-to-br from-gray-500 to-gray-700 rounded-full shadow-md" />
                             <div>
                                 <p className="text-sm font-medium text-gray-900">Wale A.</p>
                                 <p className="text-xs text-gray-500">UNB Student</p>
@@ -145,19 +145,19 @@ export default function DiscoverPage() {
                         {joinedCourses.map(course => (
                             <button
                                 key={course.id}
-                                className="w-full flex items-center justify-between px-3 py-2.5 rounded-xl hover:bg-purple-50 transition-all duration-200 group"
+                                className="w-full flex items-center justify-between px-3 py-2.5 rounded-xl hover:bg-gray-100 transition-all duration-200 group"
                             >
                                 <div className="flex items-center gap-3">
-                                    <div className="w-2 h-2 bg-purple-500 rounded-full" />
+                                    <div className="w-2 h-2 bg-gray-600 rounded-full" />
                                     <div className="text-left">
-                                        <p className="text-sm font-medium text-gray-900 group-hover:text-purple-600 transition-colors">
+                                        <p className="text-sm font-medium text-gray-900 group-hover:text-gray-700 transition-colors">
                                             {course.code}
                                         </p>
                                         <p className="text-xs text-gray-500">{course.lastActive}</p>
                                     </div>
                                 </div>
                                 {course.unread > 0 && (
-                                    <span className="px-2 py-0.5 bg-purple-600 text-white text-xs font-semibold rounded-full shadow-sm">
+                                    <span className="px-2 py-0.5 bg-gray-800 text-white text-xs font-semibold rounded-full shadow-sm">
                                         {course.unread}
                                     </span>
                                 )}
@@ -166,27 +166,27 @@ export default function DiscoverPage() {
                     </div>
 
                     {/* Activity Stats */}
-                    <div className="mt-6 p-4 bg-gradient-to-br from-purple-50 to-purple-100/50 rounded-xl border border-purple-200/40 shadow-sm">
+                    <div className="mt-6 p-4 bg-gradient-to-br from-gray-100 to-gray-200/50 rounded-xl border border-gray-300/40 shadow-sm">
                         <h4 className="text-xs font-semibold text-gray-700 uppercase tracking-wider mb-3">Your Activity</h4>
                         <div className="space-y-2">
                             <div className="flex items-center justify-between text-sm">
                                 <span className="text-gray-600">Questions</span>
-                                <span className="font-semibold text-purple-600">12</span>
+                                <span className="font-semibold text-gray-800">12</span>
                             </div>
                             <div className="flex items-center justify-between text-sm">
                                 <span className="text-gray-600">Answers</span>
-                                <span className="font-semibold text-purple-600">28</span>
+                                <span className="font-semibold text-gray-800">28</span>
                             </div>
                             <div className="flex items-center justify-between text-sm">
                                 <span className="text-gray-600">Helpful votes</span>
-                                <span className="font-semibold text-purple-600">156</span>
+                                <span className="font-semibold text-gray-800">156</span>
                             </div>
                         </div>
                     </div>
                 </div>
 
                 <div className="p-4 border-t border-gray-200/60 relative">
-                    <button className="w-full flex items-center justify-center gap-2 py-2.5 text-sm text-gray-600 hover:text-purple-600 transition-colors">
+                    <button className="w-full flex items-center justify-center gap-2 py-2.5 text-sm text-gray-600 hover:text-gray-800 transition-colors">
                         <Search size={16} />
                         <span>Discover more courses</span>
                     </button>
@@ -208,14 +208,14 @@ export default function DiscoverPage() {
                                 onClick={() => setShowFilters(!showFilters)}
                                 className={`flex items-center gap-2 px-4 py-2 rounded-lg font-medium text-sm transition-all ${
                                     showFilters
-                                        ? 'bg-purple-600 text-white shadow-lg shadow-purple-600/25'
+                                        ? 'bg-gray-800 text-white shadow-lg shadow-gray-800/25'
                                         : 'bg-gray-100 text-gray-700 hover:bg-gray-200 border border-gray-200'
                                 }`}
                             >
                                 <Filter size={16} />
                                 <span>Filters</span>
                                 {(departmentFilter !== 'all' || yearFilter !== 'all') && !showFilters && (
-                                    <span className="w-2 h-2 bg-purple-500 rounded-full" />
+                                    <span className="w-2 h-2 bg-gray-600 rounded-full" />
                                 )}
                             </button>
                         </div>
@@ -228,18 +228,18 @@ export default function DiscoverPage() {
                                 value={searchQuery}
                                 onChange={(e) => setSearchQuery(e.target.value)}
                                 placeholder="Search courses, professors, or topics..."
-                                className="w-full pl-12 pr-4 py-3 bg-gray-50 border border-gray-200 rounded-xl text-gray-900 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-purple-500/20 focus:border-purple-500 focus:bg-white transition-all"
+                                className="w-full pl-12 pr-4 py-3 bg-gray-50 border border-gray-200 rounded-xl text-gray-900 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-gray-500/20 focus:border-gray-500 focus:bg-white transition-all"
                             />
                         </div>
 
                         {/* Filter Panel */}
                         {showFilters && (
-                            <div className="mt-4 p-4 bg-gradient-to-br from-purple-50 to-blue-50/30 rounded-xl border border-purple-200/40">
+                            <div className="mt-4 p-4 bg-gradient-to-br from-gray-100 to-gray-50/30 rounded-xl border border-gray-200/40">
                                 <div className="flex flex-wrap gap-3">
                                     <select
                                         value={departmentFilter}
                                         onChange={(e) => setDepartmentFilter(e.target.value)}
-                                        className="px-4 py-2 bg-white border border-gray-200 rounded-lg text-sm font-medium focus:outline-none focus:ring-2 focus:ring-purple-500/20 focus:border-purple-500 transition-all shadow-sm"
+                                        className="px-4 py-2 bg-white border border-gray-200 rounded-lg text-sm font-medium focus:outline-none focus:ring-2 focus:ring-gray-500/20 focus:border-gray-500 transition-all shadow-sm"
                                     >
                                         <option value="all">All Departments</option>
                                         <option value="Computer Science">Computer Science</option>
@@ -250,7 +250,7 @@ export default function DiscoverPage() {
                                     <select
                                         value={yearFilter}
                                         onChange={(e) => setYearFilter(e.target.value)}
-                                        className="px-4 py-2 bg-white border border-gray-200 rounded-lg text-sm font-medium focus:outline-none focus:ring-2 focus:ring-purple-500/20 focus:border-purple-500 transition-all shadow-sm"
+                                        className="px-4 py-2 bg-white border border-gray-200 rounded-lg text-sm font-medium focus:outline-none focus:ring-2 focus:ring-gray-500/20 focus:border-gray-500 transition-all shadow-sm"
                                     >
                                         <option value="all">All Years</option>
                                         <option value="1">First Year</option>
@@ -262,7 +262,7 @@ export default function DiscoverPage() {
                                     <select
                                         value={sortBy}
                                         onChange={(e) => setSortBy(e.target.value)}
-                                        className="px-4 py-2 bg-white border border-gray-200 rounded-lg text-sm font-medium focus:outline-none focus:ring-2 focus:ring-purple-500/20 focus:border-purple-500 transition-all shadow-sm"
+                                        className="px-4 py-2 bg-white border border-gray-200 rounded-lg text-sm font-medium focus:outline-none focus:ring-2 focus:ring-gray-500/20 focus:border-gray-500 transition-all shadow-sm"
                                     >
                                         <option value="popularity">Most Popular</option>
                                         <option value="students">Most Active</option>
@@ -276,7 +276,7 @@ export default function DiscoverPage() {
                                                 setYearFilter('all');
                                                 setSearchQuery('');
                                             }}
-                                            className="flex items-center gap-1 px-4 py-2 text-sm text-purple-600 hover:text-purple-700 font-medium transition-colors"
+                                            className="flex items-center gap-1 px-4 py-2 text-sm text-gray-700 hover:text-gray-900 font-medium transition-colors"
                                         >
                                             <X size={14} />
                                             <span>Clear all</span>
@@ -291,9 +291,9 @@ export default function DiscoverPage() {
                             <p className="text-sm text-gray-600">
                                 <span className="font-semibold text-gray-900">{filtered.length}</span> courses found
                             </p>
-                            <div className="flex items-center gap-2 px-3 py-1.5 bg-purple-50 border border-purple-200/40 rounded-lg">
-                                <TrendingUp size={14} className="text-purple-600" />
-                                <span className="text-sm text-purple-700 font-medium">Trending</span>
+                            <div className="flex items-center gap-2 px-3 py-1.5 bg-gray-100 border border-gray-200/40 rounded-lg">
+                                <TrendingUp size={14} className="text-gray-700" />
+                                <span className="text-sm text-gray-700 font-medium">Trending</span>
                             </div>
                         </div>
                     </div>
@@ -305,7 +305,7 @@ export default function DiscoverPage() {
                         {filtered.map(course => (
                             <button
                                 key={course.id}
-                                className="group text-left bg-white border border-gray-200/60 rounded-xl p-6 hover:border-purple-300 hover:shadow-xl hover:shadow-purple-100/20 transition-all duration-300 hover:-translate-y-1"
+                                className="group text-left bg-white border border-gray-200/60 rounded-xl p-6 hover:border-gray-400 hover:shadow-xl hover:shadow-gray-200/20 transition-all duration-300 hover:-translate-y-1"
                             >
                                 <div className="flex items-start justify-between mb-4">
                                     <div className="flex items-center gap-2">
@@ -314,12 +314,12 @@ export default function DiscoverPage() {
                                             {course.department}
                                         </span>
                                     </div>
-                                    <div className="px-2.5 py-1 bg-gradient-to-br from-purple-50 to-purple-100 border border-purple-200/40 rounded-md shadow-sm">
-                                        <span className="text-xs font-semibold text-purple-700">{course.popularity}%</span>
+                                    <div className="px-2.5 py-1 bg-gradient-to-br from-gray-100 to-gray-200 border border-gray-300/40 rounded-md shadow-sm">
+                                        <span className="text-xs font-semibold text-gray-700">{course.popularity}%</span>
                                     </div>
                                 </div>
 
-                                <h3 className="text-lg font-bold text-gray-900 mb-1 group-hover:text-purple-600 transition-colors">
+                                <h3 className="text-lg font-bold text-gray-900 mb-1 group-hover:text-gray-700 transition-colors">
                                     {course.name}
                                 </h3>
                                 <p className="text-sm text-gray-600 mb-3">

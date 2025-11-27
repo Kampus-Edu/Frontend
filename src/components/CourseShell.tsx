@@ -86,12 +86,12 @@ export default function CourseRoomPage({course, joined}: CourseShellProps) {
         <div className="h-screen bg-white flex overflow-hidden">
             {/* Sidebar */}
             <div
-                className="w-72 bg-gradient-to-b from-purple-50/30 via-white to-white border-r border-gray-200/60 flex flex-col relative">
+                className="w-72 bg-gradient-to-b from-gray-50/30 via-white to-white border-r border-gray-200/60 flex flex-col relative">
                 {/* Subtle pattern */}
                 <div
                     className="absolute inset-0 opacity-[0.02] pointer-events-none"
                     style={{
-                        backgroundImage: `radial-gradient(circle at 2px 2px, rgb(139, 92, 246) 1px, transparent 0)`,
+                        backgroundImage: `radial-gradient(circle at 2px 2px, rgb(64, 64, 64) 1px, transparent 0)`,
                         backgroundSize: '24px 24px'
                     }}
                 />
@@ -105,9 +105,9 @@ export default function CourseRoomPage({course, joined}: CourseShellProps) {
 
                     <div className="flex items-center gap-2.5">
                         <div className="relative">
-                            <div className="absolute inset-0 bg-purple-600 rounded-xl blur-md opacity-25"/>
+                            <div className="absolute inset-0 bg-gray-800 rounded-xl blur-md opacity-25"/>
                             <div
-                                className="relative w-9 h-9 bg-gradient-to-br from-purple-600 to-purple-700 rounded-xl flex items-center justify-center shadow-lg shadow-purple-600/25">
+                                className="relative w-9 h-9 bg-gradient-to-br from-gray-700 to-gray-900 rounded-xl flex items-center justify-center shadow-lg shadow-gray-800/25">
                                 <BookOpen className="text-white" size={17} strokeWidth={2.5}/>
                             </div>
                         </div>
@@ -138,7 +138,7 @@ export default function CourseRoomPage({course, joined}: CourseShellProps) {
                                     <Star
                                         key={i}
                                         size={12}
-                                        className={i < mockCourse.difficulty ? 'fill-purple-600 text-purple-600' : 'text-gray-300'}
+                                        className={i < mockCourse.difficulty ? 'fill-gray-700 text-gray-700' : 'text-gray-300'}
                                     />
                                 ))}
                             </div>
@@ -152,8 +152,8 @@ export default function CourseRoomPage({course, joined}: CourseShellProps) {
                     <div className="space-y-3">
                         <div className="flex items-center justify-between text-sm">
                             <div className="flex items-center gap-2">
-                                <div className="w-8 h-8 bg-purple-100 rounded-lg flex items-center justify-center">
-                                    <Users size={14} className="text-purple-600"/>
+                                <div className="w-8 h-8 bg-gray-100 rounded-lg flex items-center justify-center">
+                                    <Users size={14} className="text-gray-700"/>
                                 </div>
                                 <span className="text-gray-700">Current Students</span>
                             </div>
@@ -161,8 +161,8 @@ export default function CourseRoomPage({course, joined}: CourseShellProps) {
                         </div>
                         <div className="flex items-center justify-between text-sm">
                             <div className="flex items-center gap-2">
-                                <div className="w-8 h-8 bg-blue-100 rounded-lg flex items-center justify-center">
-                                    <Award size={14} className="text-blue-600"/>
+                                <div className="w-8 h-8 bg-gray-100 rounded-lg flex items-center justify-center">
+                                    <Award size={14} className="text-gray-700"/>
                                 </div>
                                 <span className="text-gray-700">Alumni</span>
                             </div>
@@ -170,8 +170,8 @@ export default function CourseRoomPage({course, joined}: CourseShellProps) {
                         </div>
                         <div className="flex items-center justify-between text-sm">
                             <div className="flex items-center gap-2">
-                                <div className="w-8 h-8 bg-indigo-100 rounded-lg flex items-center justify-center">
-                                    <TrendingUp size={14} className="text-indigo-600"/>
+                                <div className="w-8 h-8 bg-gray-100 rounded-lg flex items-center justify-center">
+                                    <TrendingUp size={14} className="text-gray-700"/>
                                 </div>
                                 <span className="text-gray-700">Prospective</span>
                             </div>
@@ -181,20 +181,20 @@ export default function CourseRoomPage({course, joined}: CourseShellProps) {
 
                     {hasJoined && (
                         <div
-                            className="mt-6 p-4 bg-gradient-to-br from-purple-50 to-purple-100/50 rounded-xl border border-purple-200/40 shadow-sm">
+                            className="mt-6 p-4 bg-gradient-to-br from-gray-100 to-gray-200/50 rounded-xl border border-gray-300/40 shadow-sm">
                             <h4 className="text-xs font-semibold text-gray-700 uppercase tracking-wider mb-3">Quick
                                 Access</h4>
                             <div className="space-y-2">
                                 <button
-                                    className="w-full text-left px-3 py-2 text-sm text-gray-600 hover:text-purple-600 hover:bg-white rounded-lg transition-all">
+                                    className="w-full text-left px-3 py-2 text-sm text-gray-600 hover:text-gray-800 hover:bg-white rounded-lg transition-all">
                                     📄 Course Syllabus
                                 </button>
                                 <button
-                                    className="w-full text-left px-3 py-2 text-sm text-gray-600 hover:text-purple-600 hover:bg-white rounded-lg transition-all">
+                                    className="w-full text-left px-3 py-2 text-sm text-gray-600 hover:text-gray-800 hover:bg-white rounded-lg transition-all">
                                     ⏰ Office Hours
                                 </button>
                                 <button
-                                    className="w-full text-left px-3 py-2 text-sm text-gray-600 hover:text-purple-600 hover:bg-white rounded-lg transition-all">
+                                    className="w-full text-left px-3 py-2 text-sm text-gray-600 hover:text-gray-800 hover:bg-white rounded-lg transition-all">
                                     👥 Study Groups
                                 </button>
                             </div>
@@ -207,11 +207,11 @@ export default function CourseRoomPage({course, joined}: CourseShellProps) {
             <div className="flex-1 flex flex-col overflow-hidden relative">
                 {/* Decorative doodles */}
                 <div className="absolute inset-0 overflow-hidden pointer-events-none">
-                    <svg className="absolute top-20 right-[15%] w-16 h-16 text-purple-100/20" viewBox="0 0 100 100">
+                    <svg className="absolute top-20 right-[15%] w-16 h-16 text-gray-100/20" viewBox="0 0 100 100">
                         <circle cx="50" cy="50" r="40" fill="none" stroke="currentColor" strokeWidth="2"
                                 strokeDasharray="5,5"/>
                     </svg>
-                    <svg className="absolute top-[40%] left-[10%] w-12 h-12 text-blue-100/20" viewBox="0 0 24 24"
+                    <svg className="absolute top-[40%] left-[10%] w-12 h-12 text-gray-100/20" viewBox="0 0 24 24"
                          fill="none" stroke="currentColor" strokeWidth="2">
                         <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/>
                     </svg>
@@ -237,7 +237,7 @@ export default function CourseRoomPage({course, joined}: CourseShellProps) {
                             {!hasJoined && (
                                 <button
                                     onClick={() => setHasJoined(true)}
-                                    className="px-6 py-2.5 bg-gradient-to-br from-purple-600 to-purple-700 hover:from-purple-700 hover:to-purple-800 text-white rounded-lg font-medium transition-all shadow-lg shadow-purple-600/25"
+                                    className="px-6 py-2.5 bg-gradient-to-br from-gray-700 to-gray-900 hover:from-gray-800 hover:to-gray-950 text-white rounded-lg font-medium transition-all shadow-lg shadow-gray-800/25"
                                 >
                                     Join Room
                                 </button>
@@ -253,11 +253,11 @@ export default function CourseRoomPage({course, joined}: CourseShellProps) {
                         className="flex-1 flex items-center justify-center p-6 bg-gradient-to-b from-gray-50/50 to-white relative">
                         <div className="max-w-2xl text-center relative">
                             <div
-                                className="w-20 h-20 bg-gradient-to-br from-purple-600 to-purple-700 rounded-2xl flex items-center justify-center mx-auto mb-6 shadow-xl shadow-purple-600/25 relative">
+                                className="w-20 h-20 bg-gradient-to-br from-gray-700 to-gray-900 rounded-2xl flex items-center justify-center mx-auto mb-6 shadow-xl shadow-gray-800/25 relative">
                                 <UserPlus className="text-white" size={36} strokeWidth={2}/>
                                 {/* Glow effect */}
                                 <div
-                                    className="absolute inset-0 bg-purple-600 rounded-2xl blur-xl opacity-30 animate-pulse"/>
+                                    className="absolute inset-0 bg-gray-700 rounded-2xl blur-xl opacity-30 animate-pulse"/>
                             </div>
 
                             <h2 className="text-3xl font-bold text-gray-900 mb-4 tracking-tight">Join this course
@@ -276,22 +276,22 @@ export default function CourseRoomPage({course, joined}: CourseShellProps) {
                                         icon: MessageSquare,
                                         title: 'Ask Questions',
                                         desc: 'Get help from peers and alumni',
-                                        gradient: 'from-purple-100 to-purple-200/50',
-                                        iconColor: 'text-purple-600'
+                                        gradient: 'from-gray-100 to-gray-200/50',
+                                        iconColor: 'text-gray-700'
                                     },
                                     {
                                         icon: Lightbulb,
                                         title: 'Share Insights',
                                         desc: 'Contribute your strategies',
-                                        gradient: 'from-blue-100 to-blue-200/50',
-                                        iconColor: 'text-blue-600'
+                                        gradient: 'from-gray-100 to-gray-200/50',
+                                        iconColor: 'text-gray-700'
                                     },
                                     {
                                         icon: Shield,
                                         title: 'Stay Ethical',
                                         desc: 'Strategies, not solutions',
                                         gradient: 'from-green-100 to-emerald-200/50',
-                                        iconColor: 'text-green-600'
+                                        iconColor: 'text-green-700'
                                     }
                                 ].map((item, i) => {
                                     const Icon = item.icon;
@@ -311,7 +311,7 @@ export default function CourseRoomPage({course, joined}: CourseShellProps) {
 
                             <button
                                 onClick={() => setHasJoined(true)}
-                                className="px-8 py-4 bg-gradient-to-br from-purple-600 to-purple-700 hover:from-purple-700 hover:to-purple-800 text-white rounded-xl font-semibold transition-all shadow-xl shadow-purple-600/25 hover:shadow-2xl hover:shadow-purple-600/35 hover:scale-105"
+                                className="px-8 py-4 bg-gradient-to-br from-gray-700 to-gray-900 hover:from-gray-800 hover:to-gray-950 text-white rounded-xl font-semibold transition-all shadow-xl shadow-gray-800/25 hover:shadow-2xl hover:shadow-gray-800/35 hover:scale-105"
                             >
                                 Join Course Room
                             </button>
@@ -327,8 +327,8 @@ export default function CourseRoomPage({course, joined}: CourseShellProps) {
                                     key={post.id}
                                     className={`bg-white rounded-xl p-6 border transition-all hover:shadow-lg ${
                                         post.pinned
-                                            ? 'border-purple-200 bg-gradient-to-br from-purple-50/50 to-white shadow-md shadow-purple-100/20'
-                                            : 'border-gray-200/60 hover:border-purple-200'
+                                            ? 'border-gray-300 bg-gradient-to-br from-gray-50/50 to-white shadow-md shadow-gray-200/20'
+                                            : 'border-gray-200/60 hover:border-gray-300'
                                     }`}
                                 >
                                     <div className="flex items-start justify-between mb-4">
@@ -336,7 +336,7 @@ export default function CourseRoomPage({course, joined}: CourseShellProps) {
                                             <div
                                                 className={`w-10 h-10 rounded-full flex items-center justify-center text-white text-sm font-semibold shadow-md ${
                                                     post.role === 'alumni'
-                                                        ? 'bg-gradient-to-br from-purple-500 to-purple-700'
+                                                        ? 'bg-gradient-to-br from-gray-600 to-gray-800'
                                                         : 'bg-gradient-to-br from-gray-400 to-gray-600'
                                                 }`}>
                                                 {post.author.split(' ').map(n => n[0]).join('')}
@@ -347,20 +347,20 @@ export default function CourseRoomPage({course, joined}: CourseShellProps) {
                                                     <span
                                                         className={`px-2 py-0.5 text-xs rounded-full font-medium shadow-sm ${
                                                             post.role === 'alumni'
-                                                                ? 'bg-purple-100 text-purple-700'
+                                                                ? 'bg-gray-100 text-gray-700'
                                                                 : 'bg-gray-100 text-gray-700'
                                                         }`}>
                             {post.role}
                           </span>
                                                     {post.pinned && (
-                                                        <Pin size={14} className="text-purple-600"/>
+                                                        <Pin size={14} className="text-gray-600"/>
                                                     )}
                                                 </div>
                                                 <p className="text-xs text-gray-500">{post.timeAgo}</p>
                                             </div>
                                         </div>
                                         <span
-                                            className="px-2.5 py-1 bg-purple-100 text-purple-700 text-xs rounded-lg font-medium shadow-sm">
+                                            className="px-2.5 py-1 bg-gray-100 text-gray-700 text-xs rounded-lg font-medium shadow-sm">
                       {post.category}
                     </span>
                                     </div>
@@ -371,12 +371,12 @@ export default function CourseRoomPage({course, joined}: CourseShellProps) {
                                     <div className="flex items-center justify-between pt-4 border-t border-gray-200/60">
                                         <div className="flex items-center gap-4">
                                             <button
-                                                className="flex items-center gap-1.5 text-sm text-gray-600 hover:text-purple-600 transition-colors">
+                                                className="flex items-center gap-1.5 text-sm text-gray-600 hover:text-gray-800 transition-colors">
                                                 <TrendingUp size={14}/>
                                                 <span className="font-medium">{post.upvotes}</span>
                                             </button>
                                             <button
-                                                className="flex items-center gap-1.5 text-sm text-gray-600 hover:text-purple-600 transition-colors">
+                                                className="flex items-center gap-1.5 text-sm text-gray-600 hover:text-gray-800 transition-colors">
                                                 <MessageSquare size={14}/>
                                                 <span className="font-medium">{post.replies} replies</span>
                                             </button>
@@ -403,10 +403,10 @@ export default function CourseRoomPage({course, joined}: CourseShellProps) {
                                         value={message}
                                         onChange={(e) => setMessage(e.target.value)}
                                         placeholder="Ask a question or share a tip..."
-                                        className="flex-1 px-4 py-3 bg-gray-50 rounded-lg text-gray-900 placeholder:text-gray-400 focus:outline-none focus:bg-white focus:ring-2 focus:ring-purple-500/20 transition-all"
+                                        className="flex-1 px-4 py-3 bg-gray-50 rounded-lg text-gray-900 placeholder:text-gray-400 focus:outline-none focus:bg-white focus:ring-2 focus:ring-gray-500/20 transition-all"
                                     />
                                     <button
-                                        className="p-3 bg-gradient-to-br from-purple-600 to-purple-700 hover:from-purple-700 hover:to-purple-800 text-white rounded-lg transition-all shadow-lg shadow-purple-600/25">
+                                        className="p-3 bg-gradient-to-br from-gray-700 to-gray-900 hover:from-gray-800 hover:to-gray-950 text-white rounded-lg transition-all shadow-lg shadow-gray-800/25">
                                         <Send size={18} strokeWidth={2}/>
                                     </button>
                                 </div>
