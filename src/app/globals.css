@@ -2,5 +2,21 @@
 @import "tailwindcss";
 
 
-/* Optional nicer focus ring */
-:root { color-scheme: light; }
+/* Soften global dotted grid */
+body {
+    background-image: radial-gradient(circle at 1px 1px, rgba(0,0,0,0.05) 1px, transparent 0);
+    background-size: 22px 22px;
+}
+
+:root {
+    --section-padding: clamp(3rem, 8vw, 6rem);
+    --radius-xl: 1.25rem;
+    --radius-xxl: 1.75rem;
+
+    --gray-soft: #f7f7f7;
+    --gray-light: #ececec;
+    --gray-border: rgba(0,0,0,0.08);
+
+    --text-primary: #111;
+    --text-secondary: #555;
+}

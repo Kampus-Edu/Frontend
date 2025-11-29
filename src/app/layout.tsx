@@ -13,7 +13,7 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "GroupLearn",
+  title: "Kampus",
   description: "Cross-semester communities",
 };
 

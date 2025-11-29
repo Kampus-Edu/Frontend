@@ -1,58 +1,452 @@
-'use client';
-import { useState } from 'react';
-import { BookOpen, ChevronLeft } from 'lucide-react';
-import Link from 'next/link';
-import { Button } from '@/components/ui/Button';
-import { universities } from '@/lib/data';
+"use client";
 
+import { useState } from "react";
+import Link from "next/link";
+import { useRouter } from "next/navigation";
+import {
+    BookOpen,
+    ChevronLeft,
+    Mail,
+    Lock,
+    GraduationCap,
+    ArrowRight,
+    ChevronDown,
+    User,
+} from "lucide-react";
+import { universities } from "@/lib/data";
+import { loginRequest, signupRequest, saveAuth } from "@/lib/api";
 
-type Mode = 'login' | 'signup';
-export default function AuthForm({ mode }: { mode: Mode }) {
-    const [selectedUniversity, setSelectedUniversity] = useState('');
+type Mode = "login" | "signup";
+
+interface AuthFormProps {
+    initialMode?: Mode;
+}
+
+export default function AuthForm({ initialMode = "login" }: AuthFormProps) {
+    const router = useRouter();
+    const [mode, setMode] = useState<Mode>(initialMode);
+
+    const [email, setEmail] = useState("");
+    const [password, setPassword] = useState("");
+
+    const [firstName, setFirstName] = useState("");
+    const [lastName, setLastName] = useState("");
+    const [username, setUsername] = useState("");
+    const [university, setUniversity] = useState("");
+    const [currentYear, setCurrentYear] = useState("1");
+
+    const [focused, setFocused] = useState("");
+    const [loading, setLoading] = useState(false);
+    const [error, setError] = useState<string | null>(null);
+
+    const handleSubmit = async (e: React.FormEvent) => {
+        e.preventDefault();
+        setError(null);
+        setLoading(true);
+
+        try {
+            if (mode === "signup") {
+                if (!university) {
+                    throw new Error("Please select your university");
+                }
+                if (!username) {
+                    throw new Error("Please choose a username");
+                }
+
+                const response = await signupRequest({
+                    email,
+                    password,
+                    school: university,
+                    username,
+                    currentYear: Number(currentYear),
+                    firstName: firstName || undefined,
+                    lastName: lastName || undefined,
+                });
+
+                saveAuth(response);
+            } else {
+                const response = await loginRequest({
+                    email,
+                    password,
+                });
+
+                saveAuth(response);
+            }
+
+            // On success → go to discover
+            router.push("/discover");
+        } catch (err: never) {
+            console.error(err);
+            setError(err.message || "Something went wrong");
+        } finally {
+            setLoading(false);
+        }
+    };;
+
     return (
-        <div className="min-h-screen bg-gradient-to-b from-white to-slate-50 flex items-center justify-center p-6">
-            <div className="w/full max-w-md">
-                <Link href="/" className="flex items-center space-x-2 text-slate-600 hover:text-slate-900 mb-8 transition">
-                    <ChevronLeft size={20} /><span>Back to Home</span>
-                </Link>
-                <div className="bg-white border border-slate-200/80 rounded-2xl p-8 shadow-sm">
-                    <div className="text-center mb-8">
-                        <div className="w-16 h-16 bg-gradient-to-br from-emerald-500 to-teal-600 rounded-2xl flex items-center justify-center mx-auto mb-6 shadow-sm"><BookOpen className="text-white" size={32}/></div>
-                        <h2 className="text-3xl font-bold text-slate-900 mb-2">{mode === 'login' ? 'Welcome Back' : 'Join GroupLearn'}</h2>
-                        <p className="text-slate-600">{mode === 'login' ? 'Sign in to your account' : 'Create your account to get started'}</p>
+        <div className="min-h-screen bg-white flex relative overflow-hidden">
+            {/* Subtle dot background */}
+            <div
+                className="absolute inset-0 opacity-[0.015] pointer-events-none"
+                style={{
+                    backgroundImage: `radial-gradient(circle at 1px 1px, rgb(64, 64, 64) 1px, transparent 0)`,
+                    backgroundSize: "48px 48px",
+                }}
+            />
+
+            {/* Left side - Form */}
+            <div className="flex-1 flex items-center justify-center px-8 py-12 relative">
+                <div className="w-full max-w-md">
+                    {/* Back button */}
+                    <Link
+                        href="/"
+                        className="group flex items-center gap-2 text-gray-600 hover:text-gray-900 mb-12 transition-colors"
+                    >
+                        <ChevronLeft
+                            size={18}
+                            className="group-hover:-translate-x-0.5 transition-transform"
+                        />
+                        <span className="text-sm font-medium">Back to home</span>
+                    </Link>
+
+                    {/* Logo */}
+                    <Link href="/" className="flex items-center gap-2.5 mb-8">
+                        <div className="relative">
+                            <div className="absolute inset-0 bg-gray-800 rounded-xl blur-md opacity-25" />
+                            <div className="relative w-10 h-10 bg-gradient-to-br from-gray-700 to-gray-900 rounded-xl flex items-center justify-center shadow-lg shadow-gray-800/25">
+                                <BookOpen className="text-white" size={19} strokeWidth={2.5} />
+                            </div>
+                        </div>
+                        <span className="text-xl font-semibold text-gray-900 tracking-tight">
+              Kampus
+            </span>
+                    </Link>
+
+                    {/* Header */}
+                    <div className="mb-8">
+                        <h1 className="text-3xl font-bold text-gray-900 mb-2 tracking-tight">
+                            {mode === "login" ? "Welcome back" : "Create account"}
+                        </h1>
+                        <p className="text-gray-600 leading-relaxed">
+                            {mode === "login"
+                                ? "Sign in to continue to your courses"
+                                : "Join thousands of students learning together"}
+                        </p>
                     </div>
 
+                    {/* Form */}
+                    <form onSubmit={handleSubmit} className="space-y-5">
+                        {/* Email */}
+                        <div>
+                            <label className="block text-sm font-medium text-gray-700 mb-2">
+                                Email
+                            </label>
+                            <div className="relative">
+                                <Mail
+                                    className={`absolute left-3.5 top-1/2 -translate-y-1/2 transition-colors ${
+                                        focused === "email" ? "text-gray-700" : "text-gray-400"
+                                    }`}
+                                    size={18}
+                                />
+                                <input
+                                    type="email"
+                                    value={email}
+                                    onChange={(e) => setEmail(e.target.value)}
+                                    onFocus={() => setFocused("email")}
+                                    onBlur={() => setFocused("")}
+                                    placeholder="you@university.edu"
+                                    className="w-full pl-11 pr-4 py-3 bg-white border border-gray-200 rounded-xl text-gray-900 placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-gray-500/20 focus:border-gray-500 transition-all shadow-sm"
+                                    required
+                                />
+                            </div>
+                        </div>
 
-                    <div className="space-y-6">
+                        {/* Password */}
                         <div>
-                            <label className="block text-slate-600 text-sm font-medium mb-2">Email</label>
-                            <input type="email" className="w-full px-4 py-3 bg-white border border-slate-300 rounded-xl text-slate-900 placeholder-slate-400 focus:ring-2 focus:ring-emerald-500/50 focus:border-emerald-500/50 transition" placeholder="your.email@unb.ca"/>
+                            <label className="block text-sm font-medium text-gray-700 mb-2">
+                                Password
+                            </label>
+                            <div className="relative">
+                                <Lock
+                                    className={`absolute left-3.5 top-1/2 -translate-y-1/2 transition-colors ${
+                                        focused === "password" ? "text-gray-700" : "text-gray-400"
+                                    }`}
+                                    size={18}
+                                />
+                                <input
+                                    type="password"
+                                    value={password}
+                                    onChange={(e) => setPassword(e.target.value)}
+                                    onFocus={() => setFocused("password")}
+                                    onBlur={() => setFocused("")}
+                                    placeholder="••••••••"
+                                    className="w-full pl-11 pr-4 py-3 bg-white border border-gray-200 rounded-xl text-gray-900 placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-gray-500/20 focus:border-gray-500 transition-all shadow-sm"
+                                    required
+                                />
+                            </div>
                         </div>
-                        <div>
-                            <label className="block text-slate-600 text-sm font-medium mb-2">Password</label>
-                            <input type="password" className="w-full px-4 py-3 bg-white border border-slate-300 rounded-xl text-slate-900 placeholder-slate-400 focus:ring-2 focus:ring-emerald-500/50 focus:border-emerald-500/50 transition" placeholder="••••••••"/>
-                        </div>
-                        {mode === 'signup' && (
-                            <div>
-                                <label className="block text-slate-600 text-sm font-medium mb-2">University</label>
-                                <select value={selectedUniversity} onChange={(e)=>setSelectedUniversity(e.target.value)} className="w-full px-4 py-3 bg-white border border-slate-300 rounded-xl text-slate-900 focus:ring-2 focus:ring-emerald-500/50 focus:border-emerald-500/50 transition">
-                                    <option value="">Select your university</option>
-                                    {universities.map((u, i)=>(<option key={i} value={u}>{u}</option>))}
-                                </select>
+
+                        {/* Extra fields for SIGNUP only */}
+                        {mode === "signup" && (
+                            <>
+                                {/* Username */}
+                                <div>
+                                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                                        Username
+                                    </label>
+                                    <div className="relative">
+                                        <User
+                                            className={`absolute left-3.5 top-1/2 -translate-y-1/2 transition-colors ${
+                                                focused === "username" ? "text-gray-700" : "text-gray-400"
+                                            }`}
+                                            size={18}
+                                        />
+                                        <input
+                                            type="text"
+                                            value={username}
+                                            onChange={(e) => setUsername(e.target.value)}
+                                            onFocus={() => setFocused("username")}
+                                            onBlur={() => setFocused("")}
+                                            placeholder="wale_a"
+                                            className="w-full pl-11 pr-4 py-3 bg-white border border-gray-200 rounded-xl text-gray-900 placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-gray-500/20 focus:border-gray-500 transition-all shadow-sm"
+                                            required
+                                        />
+                                    </div>
+                                </div>
+
+                                {/* Name row */}
+                                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                                    <div>
+                                        <label className="block text-sm font-medium text-gray-700 mb-2">
+                                            First name (optional)
+                                        </label>
+                                        <input
+                                            type="text"
+                                            value={firstName}
+                                            onChange={(e) => setFirstName(e.target.value)}
+                                            onFocus={() => setFocused("firstName")}
+                                            onBlur={() => setFocused("")}
+                                            className="w-full px-3 py-3 bg-white border border-gray-200 rounded-xl text-gray-900 placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-gray-500/20 focus:border-gray-500 transition-all shadow-sm"
+                                            placeholder="Adebowale"
+                                        />
+                                    </div>
+                                    <div>
+                                        <label className="block text-sm font-medium text-gray-700 mb-2">
+                                            Last name (optional)
+                                        </label>
+                                        <input
+                                            type="text"
+                                            value={lastName}
+                                            onChange={(e) => setLastName(e.target.value)}
+                                            onFocus={() => setFocused("lastName")}
+                                            onBlur={() => setFocused("")}
+                                            className="w-full px-3 py-3 bg-white border border-gray-200 rounded-xl text-gray-900 placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-gray-500/20 focus:border-gray-500 transition-all shadow-sm"
+                                            placeholder="Adebayo"
+                                        />
+                                    </div>
+                                </div>
+
+                                {/* University */}
+                                <div>
+                                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                                        University
+                                    </label>
+                                    <div className="relative">
+                                        <GraduationCap
+                                            className={`absolute left-3.5 top-1/2 -translate-y-1/2 pointer-events-none z-10 transition-colors ${
+                                                focused === "university"
+                                                    ? "text-gray-700"
+                                                    : "text-gray-400"
+                                            }`}
+                                            size={18}
+                                        />
+                                        <select
+                                            value={university}
+                                            onChange={(e) => setUniversity(e.target.value)}
+                                            onFocus={() => setFocused("university")}
+                                            onBlur={() => setFocused("")}
+                                            className="w-full pl-11 pr-10 py-3 bg-white border border-gray-200 rounded-xl text-gray-900 focus:outline-none focus:ring-2 focus:ring-gray-500/20 focus:border-gray-500 transition-all appearance-none cursor-pointer shadow-sm"
+                                            required
+                                        >
+                                            <option value="">Select your university</option>
+                                            {universities.map((u, i) => (
+                                                <option key={i} value={u}>
+                                                    {u}
+                                                </option>
+                                            ))}
+                                        </select>
+                                        <ChevronDown
+                                            className="absolute right-3.5 top-1/2 -translate-y-1/2 text-gray-400 pointer-events-none"
+                                            size={18}
+                                        />
+                                    </div>
+                                </div>
+
+                                {/* Current year */}
+                                <div>
+                                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                                        Current year
+                                    </label>
+                                    <select
+                                        value={currentYear}
+                                        onChange={(e) => setCurrentYear(e.target.value)}
+                                        className="w-full px-3 py-3 bg-white border border-gray-200 rounded-xl text-gray-900 focus:outline-none focus:ring-2 focus:ring-gray-500/20 focus:border-gray-500 transition-all shadow-sm"
+                                        required
+                                    >
+                                        <option value="1">1st year</option>
+                                        <option value="2">2nd year</option>
+                                        <option value="3">3rd year</option>
+                                        <option value="4">4th year</option>
+                                        <option value="5">Grad / other</option>
+                                    </select>
+                                </div>
+                            </>
+                        )}
+
+                        {/* Error */}
+                        {error && (
+                            <p className="text-sm text-red-600 bg-red-50 border border-red-100 rounded-lg px-3 py-2">
+                                {error}
+                            </p>
+                        )}
+
+                        {/* Submit */}
+                        <button
+                            type="submit"
+                            disabled={loading}
+                            className="group w-full h-12 bg-gradient-to-br from-gray-700 to-gray-900 hover:from-gray-800 hover:to-gray-950 text-white rounded-xl font-medium transition-all shadow-lg shadow-gray-800/25 hover:shadow-xl hover:shadow-gray-800/35 mt-6 flex items-center justify-center gap-2 disabled:opacity-60 disabled:cursor-not-allowed"
+                        >
+              <span>
+                {loading
+                    ? mode === "login"
+                        ? "Signing in..."
+                        : "Creating account..."
+                    : mode === "login"
+                        ? "Sign in"
+                        : "Create account"}
+              </span>
+                            {!loading && (
+                                <ArrowRight
+                                    size={18}
+                                    className="group-hover:translate-x-0.5 transition-transform"
+                                    strokeWidth={2.5}
+                                />
+                            )}
+                        </button>
+
+                        {mode === "login" && (
+                            <div className="text-center">
+                                <button
+                                    type="button"
+                                    className="text-sm text-gray-700 hover:text-gray-900 font-medium transition-colors"
+                                >
+                                    Forgot password?
+                                </button>
                             </div>
                         )}
-                        <Link href="/discover"><Button className="w-full py-4">{mode === 'login' ? 'Sign In' : 'Create Account'}</Button></Link>
+                    </form>
+
+                    {/* Toggle mode */}
+                    <div className="mt-8 text-center">
+            <span className="text-gray-600">
+              {mode === "login"
+                  ? "Don't have an account? "
+                  : "Already have an account? "}
+            </span>
+                        <button
+                            onClick={() =>
+                                setMode(mode === "login" ? "signup" : "login")
+                            }
+                            className="text-gray-800 hover:text-gray-900 font-medium transition-colors"
+                        >
+                            {mode === "login" ? "Sign up" : "Sign in"}
+                        </button>
                     </div>
 
-
-                    <div className="mt-6 text-center">
-                        <p className="text-slate-600">
-                            {mode === 'login' ? "Don't have an account? " : "Already have an account? "}
-                            <Link href={mode === 'login' ? '/signup' : '/login'} className="text-emerald-600 hover:text-emerald-700 font-medium">{mode === 'login' ? 'Sign up' : 'Sign in'}</Link>
-                        </p>
+                    {/* Trust indicators */}
+                    <div className="mt-8 flex items-center justify-center gap-6 text-xs text-gray-500">
+                        <div className="flex items-center gap-1.5">
+                            <div className="w-1.5 h-1.5 bg-green-500 rounded-full" />
+                            <span>Secure & encrypted</span>
+                        </div>
+                        <div className="flex items-center gap-1.5">
+                            <div className="w-1.5 h-1.5 bg-gray-600 rounded-full" />
+                            <span>2,400+ students</span>
+                        </div>
                     </div>
                 </div>
             </div>
+
+            {/* Right side - Visual */}
+            <div className="hidden lg:flex flex-1 bg-gradient-to-br from-gray-700 via-gray-800 to-gray-900 relative overflow-hidden items-center justify-center">
+                {/* Decorative grid */}
+                <div
+                    className="absolute inset-0 opacity-10"
+                    style={{
+                        backgroundImage: `linear-gradient(to right, white 1px, transparent 1px), linear-gradient(to bottom, white 1px, transparent 1px)`,
+                        backgroundSize: '60px 60px'
+                    }}
+                />
+
+                {/* Floating gradient orbs */}
+                <div className="absolute top-20 left-20 w-40 h-40 bg-white/5 rounded-full blur-3xl animate-float" />
+                <div className="absolute bottom-32 right-32 w-56 h-56 bg-white/5 rounded-full blur-3xl animate-float-delayed" />
+
+                {/* Content */}
+                <div className="relative z-10 max-w-lg px-12">
+                    <div className="mb-8">
+                        <div className="w-16 h-16 bg-white/10 backdrop-blur-sm rounded-2xl flex items-center justify-center mb-6 shadow-xl">
+                            <svg className="w-8 h-8 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
+                                <path strokeLinecap="round" strokeLinejoin="round" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
+                            </svg>
+                        </div>
+                    </div>
+
+                    <h2 className="text-4xl font-bold text-white mb-6 leading-tight tracking-tight">
+                        Connect across
+                        <br />semesters
+                    </h2>
+                    <p className="text-white/80 text-lg leading-relaxed mb-8">
+                        Join course communities that bridge past, present, and future.
+                        Get advice from alumni, collaborate with peers, and mentor incoming students.
+                    </p>
+
+                    {/* Decorative underline */}
+                    <svg className="w-40 h-3 text-white/20 mb-8" viewBox="0 0 200 12">
+                        <path d="M 0 6 Q 50 2 100 6 T 200 6" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" />
+                    </svg>
+
+                    {/* Stats */}
+                    <div className="grid grid-cols-3 gap-8">
+                        <div>
+                            <div className="text-3xl font-bold text-white mb-1">2.4k+</div>
+                            <div className="text-white/70 text-sm">Active students</div>
+                        </div>
+                        <div>
+                            <div className="text-3xl font-bold text-white mb-1">150+</div>
+                            <div className="text-white/70 text-sm">Communities</div>
+                        </div>
+                        <div>
+                            <div className="text-3xl font-bold text-white mb-1">94%</div>
+                            <div className="text-white/70 text-sm">Success rate</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <style jsx>{`
+                @keyframes float {
+                    0%, 100% { transform: translateY(0px); }
+                    50% { transform: translateY(-20px); }
+                }
+                .animate-float {
+                    animation: float 6s ease-in-out infinite;
+                }
+                .animate-float-delayed {
+                    animation: float 6s ease-in-out infinite;
+                    animation-delay: 3s;
+                }
+            `}</style>
         </div>
     );
 }
