@@ -1,0 +1,58 @@
+<svg
+        width="100%"
+        height="200"
+        viewBox="0 0 1800 200"
+        fill="none"
+        xmlns="http://www.w3.org/2000/svg"
+>
+    {/* Hand-drawn line */}
+    <path
+            id="scribblePath"
+            d="
+        M 0 120
+        C 200 70 350 150 500 110
+        C 650 70 800 90 950 120
+        C 1100 150 1250 100 1400 130
+        C 1550 160 1700 140 1800 125
+      "
+            stroke="#4B5563"
+            strokeWidth="6"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            strokeDasharray="2600"
+            strokeDashoffset="2600"
+    >
+        <animate
+                attributeName="stroke-dashoffset"
+                from="2600"
+                to="0"
+                dur="2.3s"
+                begin="0.2s"
+                fill="freeze"
+                calcMode="spline"
+                keySplines="0.42 0 0.22 1"
+        />
+    </path>
+
+    {/* Plane following path */}
+    <g>
+        <path
+                id="plane"
+                d="M 0 0 L -40 -12 L -10 8 Z"
+                fill="#F0F4FF"
+                stroke="#111827"
+                strokeWidth="3"
+        >
+            <animateMotion
+                    dur="2.3s"
+                    begin="0.2s"
+                    fill="freeze"
+                    rotate="auto"
+                    calcMode="spline"
+                    keySplines="0.42 0 0.22 1"
+            >
+                <mpath href="#scribblePath" />
+            </animateMotion>
+        </path>
+    </g>
+</svg>
