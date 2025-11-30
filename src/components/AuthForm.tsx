@@ -75,7 +75,7 @@ export default function AuthForm({ initialMode = "login" }: AuthFormProps) {
 
             // On success → go to discover
             router.push("/discover");
-        } catch (err: never) {
+        } catch (err: any) {
             console.error(err);
             setError(err.message || "Something went wrong");
         } finally {

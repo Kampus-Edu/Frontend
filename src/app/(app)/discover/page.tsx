@@ -1,63 +1,12 @@
 'use client';
 
-import {useState, useMemo, useEffect} from 'react';
-import { BookOpen, Users, TrendingUp, Hash, Search, Filter, X, Star, ChevronDown } from 'lucide-react';
-import {AuthUser, getAuthUser} from "@/lib/api";
+import { useState, useMemo, useEffect } from 'react';
+import { BookOpen, Users, TrendingUp, Search, Filter, X, Star } from 'lucide-react';
+import { AuthUser, getAuthUser } from "@/lib/api";
 import { useRequireAuth } from "@/lib/useRequireAuth";
+import Link from "next/link";
 
-
-
-
-const allCourses = [
-    {
-        id: 'maac3021',
-        code: 'MAAC 3021',
-        name: 'Advanced Algorithms',
-        department: 'Computer Science',
-        year: 3,
-        professor: 'Dr. Sarah Chen',
-        description: 'Deep dive into algorithm design and analysis. Covers dynamic programming, greedy algorithms, and NP-completeness.',
-        currentStudents: 45,
-        alumni: 180,
-        prospective: 89,
-        popularity: 94,
-        difficulty: 4,
-        color: 'bg-blue-500',
-        tags: ['Theory', 'Problem Solving', 'Challenging']
-    },
-    {
-        id: 'cs2110',
-        code: 'CS 2110',
-        name: 'Data Structures',
-        department: 'Computer Science',
-        year: 2,
-        professor: 'Prof. Michael Torres',
-        description: 'Fundamental data structures including trees, graphs, and hash tables. Essential for technical interviews.',
-        currentStudents: 78,
-        alumni: 320,
-        prospective: 156,
-        popularity: 98,
-        difficulty: 3,
-        color: 'bg-emerald-500',
-        tags: ['Core', 'Practical', 'Interview Prep']
-    },
-    {
-        id: 'math2421',
-        code: 'MATH 2421',
-        name: 'Linear Algebra',
-        department: 'Mathematics',
-        year: 2,
-        professor: 'Dr. James Wilson',
-        description: 'Vector spaces, matrices, eigenvalues, and linear transformations with applications to machine learning.',
-        currentStudents: 62,
-        alumni: 245,
-        prospective: 103,
-        popularity: 91,
-        difficulty: 4,
-        color: 'bg-gray-600',
-        tags: ['Theory', 'ML Foundation']
-    }
-];
+import { allCourses } from "@/lib/data"; // <-- import the large dataset you saved earlier
 
 const joinedCourses = [
     { id: 'cs2383', name: 'Data Structures', code: 'CS2383', lastActive: '2 hours ago', unread: 3 },
@@ -326,20 +275,21 @@ export default function DiscoverPage() {
                 {/* Course Grid */}
                 <div className="flex-1 overflow-y-auto p-6 bg-gradient-to-b from-gray-50/30 to-white">
                     <div className="grid md:grid-cols-2 xl:grid-cols-3 gap-5">
-                        {filtered.map(course => (
-                            <button
-                                key={course.id}
-                                className="group text-left bg-white border border-gray-200/60 rounded-xl p-6 hover:border-gray-400 hover:shadow-xl hover:shadow-gray-200/20 transition-all duration-300 hover:-translate-y-1"
+                        {filtered.map((course) => (
+                            <Link key={course.id} href={`/course/${course.id}`}
+                                className="group block text-left bg-white border border-gray-200/60 rounded-xl p-6 hover:border-gray-400 hover:shadow-xl hover:shadow-gray-200/20 transition-all duration-300 hover:-translate-y-1"
                             >
                                 <div className="flex items-start justify-between mb-4">
                                     <div className="flex items-center gap-2">
                                         <div className={`w-3 h-3 rounded-full ${course.color} shadow-sm`} />
                                         <span className="text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                            {course.department}
-                                        </span>
+            {course.department}
+          </span>
                                     </div>
                                     <div className="px-2.5 py-1 bg-gradient-to-br from-gray-100 to-gray-200 border border-gray-300/40 rounded-md shadow-sm">
-                                        <span className="text-xs font-semibold text-gray-700">{course.popularity}%</span>
+          <span className="text-xs font-semibold text-gray-700">
+            {course.popularity}%
+          </span>
                                     </div>
                                 </div>
 
@@ -355,29 +305,34 @@ export default function DiscoverPage() {
 
                                 <div className="flex flex-wrap gap-1.5 mb-4">
                                     {course.tags.slice(0, 3).map((tag, i) => (
-                                        <span key={i} className="px-2.5 py-1 bg-gray-100 text-gray-700 text-xs font-medium rounded-md">
-                                            {tag}
-                                        </span>
+                                        <span
+                                            key={i}
+                                            className="px-2.5 py-1 bg-gray-100 text-gray-700 text-xs font-medium rounded-md"
+                                        >
+            {tag}
+          </span>
                                     ))}
                                 </div>
 
                                 <div className="flex items-center justify-between pt-4 border-t border-gray-200/60 text-sm">
                                     <div className="flex items-center gap-3 text-gray-600">
+          <span className="flex items-center gap-1">
+            <Users size={14} />
+            <span className="font-medium">
+              {course.currentStudents + course.alumni}
+            </span>
+          </span>
                                         <span className="flex items-center gap-1">
-                                            <Users size={14} />
-                                            <span className="font-medium">{course.currentStudents + course.alumni}</span>
-                                        </span>
-                                        <span className="flex items-center gap-1">
-                                            <TrendingUp size={14} />
-                                            <span className="font-medium">{course.popularity}%</span>
-                                        </span>
+            <TrendingUp size={14} />
+            <span className="font-medium">{course.popularity}%</span>
+          </span>
                                     </div>
                                     <div className="flex items-center gap-1 text-gray-600">
                                         <Star size={14} className="fill-current" />
                                         <span className="font-medium">{course.difficulty}/5</span>
                                     </div>
                                 </div>
-                            </button>
+                            </Link>
                         ))}
                     </div>
 
