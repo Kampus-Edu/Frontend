@@ -77,8 +77,9 @@ export default function DiscoverPage() {
                 />
 
                 {/* Logo & User */}
+                {/* Logo & User */}
                 <div className="p-6 border-b border-gray-200/60 relative">
-                    <div className="flex items-center gap-2.5 mb-6">
+                    <Link href="/" className="flex items-center gap-2.5 mb-6 hover:opacity-80 transition-opacity">
                         <div className="relative">
                             <div className="absolute inset-0 bg-gray-800 rounded-xl blur-md opacity-25" />
                             <div className="relative w-9 h-9 bg-gradient-to-br from-gray-700 to-gray-900 rounded-xl flex items-center justify-center shadow-lg shadow-gray-800/25">
@@ -86,7 +87,7 @@ export default function DiscoverPage() {
                             </div>
                         </div>
                         <span className="text-[17px] font-semibold text-gray-900 tracking-tight">Kampus</span>
-                    </div>
+                    </Link>
 
                     <div className="flex items-center justify-between">
                         <div className="flex items-center gap-3">
@@ -101,7 +102,6 @@ export default function DiscoverPage() {
                                 <p className="text-xs text-gray-500">
                                     {authUser?.email ?? "UNB Student"}
                                 </p>
-
                             </div>
                         </div>
                     </div>
