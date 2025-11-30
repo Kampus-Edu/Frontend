@@ -1,6 +1,12 @@
 'use client';
-import { useState, useMemo } from 'react';
+
+import {useState, useMemo, useEffect} from 'react';
 import { BookOpen, Users, TrendingUp, Hash, Search, Filter, X, Star, ChevronDown } from 'lucide-react';
+import {AuthUser, getAuthUser} from "@/lib/api";
+import { useRequireAuth } from "@/lib/useRequireAuth";
+
+
+
 
 const allCourses = [
     {
@@ -58,12 +64,20 @@ const joinedCourses = [
     { id: 'maac3021', name: 'Culture Matters', code: 'MAAC3021', lastActive: '1 day ago', unread: 0 }
 ];
 
+
 export default function DiscoverPage() {
     const [departmentFilter, setDepartmentFilter] = useState('all');
     const [yearFilter, setYearFilter] = useState('all');
     const [searchQuery, setSearchQuery] = useState('');
     const [sortBy, setSortBy] = useState('popularity');
     const [showFilters, setShowFilters] = useState(false);
+    const [authUser, setAuthUser] = useState<AuthUser | null>(null);
+
+    useRequireAuth();
+
+    useEffect(() => {
+        setAuthUser(getAuthUser());
+    }, []);
 
     const filtered = useMemo(() => {
         let courses = allCourses;
@@ -98,6 +112,8 @@ export default function DiscoverPage() {
         });
     }, [searchQuery, departmentFilter, yearFilter, sortBy]);
 
+    if(!authUser) return null;
+
     return (
         <div className="min-h-screen bg-white flex">
             {/* Sidebar */}
@@ -127,8 +143,16 @@ export default function DiscoverPage() {
                         <div className="flex items-center gap-3">
                             <div className="w-10 h-10 bg-gradient-to-br from-gray-500 to-gray-700 rounded-full shadow-md" />
                             <div>
-                                <p className="text-sm font-medium text-gray-900">Wale A.</p>
-                                <p className="text-xs text-gray-500">UNB Student</p>
+                                <p className="text-sm font-medium text-gray-900">
+                                    {authUser
+                                        ? `${authUser.firstName ?? ""} ${authUser.lastName ?? ""}`.trim() ||
+                                        authUser.username
+                                        : "Student"}
+                                </p>
+                                <p className="text-xs text-gray-500">
+                                    {authUser?.email ?? "UNB Student"}
+                                </p>
+
                             </div>
                         </div>
                     </div>
