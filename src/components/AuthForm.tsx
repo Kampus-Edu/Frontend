@@ -82,11 +82,14 @@ export default function AuthForm({ initialMode = "login" }: AuthFormProps) {
 
             // On success → go to discover
             router.push("/discover");
-        } catch (err: never) {
+        } catch (err) {
             console.error(err);
-            setError(err.message || "Something went wrong");
-        } finally {
-            setLoading(false);
+
+            if(err instanceof Error){
+                setError(err.message || "Something went wrong");
+            } else {
+                setError("Something went wrong");
+            }
         }
     };;
 
